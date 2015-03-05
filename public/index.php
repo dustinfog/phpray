@@ -34,7 +34,7 @@ if ($file != __FILE__) {
         echo json_encode($ret);
     }
 } else{
-    include_once("index.html");
+    include_once("index.tpl.php");
 }
 
 function stripslashesDeep($value)
