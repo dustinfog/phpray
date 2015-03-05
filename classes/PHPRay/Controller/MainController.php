@@ -89,14 +89,13 @@ class MainController {
 
         $ret = null;
         $profileData = null;
-        $profiler = null;
+        $profiler = new Profiler($project);
         $start = Functions::getMillisecond();
         try {
             $instance = null;
 
             $classCode = trim($_POST['classCode']);
 
-            $profiler = new Profiler($project);
             $profiler->enable();
 
             if($classCode) {
@@ -108,12 +107,9 @@ class MainController {
 
         } catch (\Exception $e) {
             $errorHandler->catchException($e);
-        } finally {
-            if($profiler != null) {
-                $profileData = $profiler->disable();
-            }
         }
 
+        $profileData = $profiler->disable();
         $output = ob_get_clean();
         $elapsed = Functions::getMillisecond() - $start;
 
