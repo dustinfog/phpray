@@ -1,0 +1,10 @@
+{
+  "autoload": {
+    "psr-4": {
+      "PHPRay\\": "classes/PHPRay"
+    }
+  },
+  "require": {
+	"nette/reflection": "2.2.1"
+  }
+}

@@ -1,0 +1,69 @@
+.str {
+	color: #718c00;
+}
+
+.kwd {
+	color: #8959a8;
+}
+
+.com {
+	color: #8e908c;
+}
+
+.typ {
+	color: #4271ae;
+}
+
+.lit {
+	color: #f5871f;
+}
+
+.pun {
+	color: #4d4d4c;
+}
+
+.opn {
+	color: #4d4d4c;
+}
+
+.clo {
+	color: #4d4d4c;
+}
+
+.tag {
+	color: #c82829;
+}
+
+.atn {
+	color: #f5871f;
+}
+
+.atv {
+	color: #3e999f;
+}
+
+.dec {
+	color: #f5871f;
+}
+
+.var {
+	color: #c82829;
+}
+
+.fun {
+	color: #4271ae;
+}
+
+/* .spl { font-family: "PT Mono", sandboxcode; color: #4f94cd; }
+.str { font-family: "PT Mono", sandboxcode; color: #880000; }
+.kwd { font-family: "PT Mono", sandboxcode; color: #000088; }
+.com { font-family: "PT Mono", sandboxcode; color: #008800; }
+.typ { font-family: "PT Mono", sandboxcode; color: #0068CF; }
+.lit { font-family: "PT Mono", sandboxcode; color: #006666; }
+.pun { font-family: "PT Mono", sandboxcode; color: #666600; }
+.pln { font-family: "PT Mono", sandboxcode; color: #222222; }
+.tag { font-family: "PT Mono", sandboxcode; color: #000088; }
+.atn { font-family: "PT Mono", sandboxcode; color: #660066; }
+.atv { font-family: "PT Mono", sandboxcode; color: #880000; }
+.dec { font-family: "PT Mono", sandboxcode; color: #660066; }
+*/
