@@ -3,3 +3,4 @@ composer.lock
 conf/passwd.php
 conf/projects.php
 .*
+public/nohup.out
