@@ -1,2 +1,4 @@
 vendor
 composer.lock
+conf/passwd.php
+conf/projects.php
