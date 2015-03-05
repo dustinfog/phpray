@@ -64,7 +64,7 @@ class Functions {
         $trace = array_filter($trace, function($item)
         {
             $topNameSpace = self::getTopNamespace();
-            return strpos($item["file"], $topNameSpace) === false && (!array_key_exists("class", $item) || strpos($item["class"], $topNameSpace) === false);
+            return array_key_exists("file", $item) && strpos($item["file"], $topNameSpace) === false && (!array_key_exists("class", $item) || strpos($item["class"], $topNameSpace) === false);
         });
 
         return array_map(function($item)
