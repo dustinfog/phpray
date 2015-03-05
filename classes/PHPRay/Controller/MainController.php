@@ -114,7 +114,7 @@ class MainController {
         $elapsed = Functions::getMillisecond() - $start;
 
         return array(
-            'return' => is_string($ret) ? $ret : (is_bool($ret) ? json_encode($ret) : print_r($ret, true)),
+            'return' => (is_object($ret) || is_array($ret)) ? print_r($ret, true) : $ret,
             'output' => $output,
             'errors' => $errorHandler->getErrors(),
             'elapsed'=> $elapsed,

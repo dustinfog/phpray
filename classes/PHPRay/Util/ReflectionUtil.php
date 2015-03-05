@@ -146,15 +146,7 @@ class ReflectionUtil {
             $code .= "\$" . $parameter->getName() . " = ";
 
             if($parameter->isDefaultValueAvailable()) {
-                $defaultValue = $parameter->getDefaultValue();
-
-                if(is_object($defaultValue)) {
-                    $code .= "null";
-                } else if(is_array($defaultValue)) {
-                    $code .= "array()";
-                } else {
-                    $code .= json_encode($defaultValue);
-                }
+                $code .= var_export($parameter->getDefaultValue(), true);
             } else {
                 $code .= "null";
             }
@@ -232,7 +224,7 @@ class ReflectionUtil {
                 } else if(is_array($value)) {
                     $sign .= "array";
                 } else {
-                    $sign .= json_encode($value);
+                    $sign .= var_export($value, true);
                 }
             }
         }
