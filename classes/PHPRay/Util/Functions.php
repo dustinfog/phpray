@@ -161,10 +161,10 @@ class Functions {
 
     public static function stripslashesReqeust() {
         if((function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()) || (ini_get('magic_quotes_sybase') && (strtolower(ini_get('magic_quotes_sybase'))!="off")) ){
-            $_GET = stripslashesDeep($_GET);
-            $_POST = stripslashesDeep($_POST);
-            $_COOKIE = stripslashesDeep($_COOKIE);
-            $_REQUEST = stripslashesDeep($_REQUEST);
+            $_GET = self::stripslashesDeep($_GET);
+            $_POST = self::stripslashesDeep($_POST);
+            $_COOKIE = self::stripslashesDeep($_COOKIE);
+            $_REQUEST = self::stripslashesDeep($_REQUEST);
         }
 
     }
