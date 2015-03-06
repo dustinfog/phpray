@@ -153,7 +153,7 @@ class Functions {
     public static function stripslashesDeep($value)
     {
         $value = is_array($value) ?
-            array_map('stripslashesDeep', $value) :
+            array_map(array(__CLASS__, 'stripslashesDeep'), $value) :
             stripslashes($value);
 
         return $value;
