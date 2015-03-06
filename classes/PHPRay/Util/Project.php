@@ -11,14 +11,14 @@ namespace PHPRay\Util;
 
 class Project {
     public static function getProjects() {
-        return require_once(PHPRAY_CONF_ROOT . "projects.php");
+        return config("projects");
     }
 
-    public static function getProject() {
+    public static function getProject($projectName) {
         $projects = self::getProjects();
 
         foreach($projects as $project) {
-            if($project['name'] == $_REQUEST['project']) {
+            if($project['name'] == $projectName) {
                 return $project;
             }
         }
@@ -26,8 +26,12 @@ class Project {
         return null;
     }
 
-    public static function initProject() {
-        $project = self::getProject();
+    public static function isProjectFile($project, $file) {
+        return Functions::dirContains($project["src"], $file);
+    }
+
+    public static function initProject($projectName) {
+        $project = self::getProject($projectName);
         $init = $project["init"];
 
         $init($project);

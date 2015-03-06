@@ -81,4 +81,91 @@ class Functions {
             );
         }, array_values($trace));
     }
+
+    public static function isSameFile($file1, $file2) {
+        $stat1 = stat($file1);
+        $stat2 = stat($file2);
+
+        return $stat1[0] == $stat2[0] && $stat1[1] == $stat2[1];
+    }
+
+    public static function sliceCode($file, $focusLine, $diff) {
+        $code = highlight_file($file, true);
+        $code = substr($code, 36, strlen($code) - 51);
+
+        $from = max($focusLine - $diff, 1);
+        $to = $focusLine + $diff;
+
+        $offset = 0;
+        $line = 1;
+
+        $focusStartPos = 0;
+        $focusEndPos = -1;
+        while(true) {
+            $pos = strpos($code, "<br />", $offset);
+
+            if($pos === false) {
+                break;
+            }
+
+            $line ++;
+            $offset = $pos + 6;
+            if($line == $from) {
+                $focusStartPos = $pos;
+            } else if($line == $to + 1) {
+                $focusEndPos = $pos;
+            }
+        }
+
+        if($focusEndPos == -1) {
+            $focusEndPos = strlen($code);
+        }
+
+        $subCode = substr($code, $focusStartPos, $focusEndPos - $focusStartPos);
+        $firstSpanPos = strpos($subCode, "span");
+        if($subCode[$firstSpanPos - 1] == '/') {
+            $preCode = substr($code, 0, $focusStartPos);
+            $preSpanPos = strrpos($preCode, 'span');
+            $subCode = substr($preCode, $preSpanPos - 1, 29) . $subCode;
+        }
+
+        $subCode = preg_replace("/<span style=\"color: ([^\"]+)\">/", "<font color=\"\$1\">", $subCode);
+        $subCode = str_replace("</span>", "</font>", $subCode);
+
+        if($focusStartPos != 0) {
+            $subCode = "..." . $subCode;
+        }
+
+        if($focusEndPos != strlen($code)) {
+            $subCode .= "<br />...";
+        }
+
+        return array(
+            "line" => $focusLine - $from + 1,
+            "code" => $subCode
+        );
+    }
+
+    public static function dirContains($dir, $file) {
+        return strpos(realpath($file), realpath($dir) . DIRECTORY_SEPARATOR) !== false;
+    }
+
+    public static function stripslashesDeep($value)
+    {
+        $value = is_array($value) ?
+            array_map('stripslashesDeep', $value) :
+            stripslashes($value);
+
+        return $value;
+    }
+
+    public static function stripslashesReqeust() {
+        if((function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()) || (ini_get('magic_quotes_sybase') && (strtolower(ini_get('magic_quotes_sybase'))!="off")) ){
+            $_GET = stripslashesDeep($_GET);
+            $_POST = stripslashesDeep($_POST);
+            $_COOKIE = stripslashesDeep($_COOKIE);
+            $_REQUEST = stripslashesDeep($_REQUEST);
+        }
+
+    }
 }

@@ -18,7 +18,7 @@ use PHPRay\Util\Profiler;
 
 class MainController {
     public function login() {
-        $users = require_once(PHPRAY_CONF_ROOT . "passwd.php");
+        $users = config("passwd");
 
         foreach($users as $user) {
             if($user["username"] == $_POST['username'] && $user["password"] == $_POST["password"]) {
@@ -41,16 +41,27 @@ class MainController {
     }
 
     public function getFileTree() {
-        $project = Project::getProject();
+        $project = $this->getProject();
         return Functions::treeDir($project["src"]);
     }
 
     public function getClassesAndMethods() {
-        $project = Project::initProject();
+        $project = $this->initProject();
 
         $path = $project["src"] . DIRECTORY_SEPARATOR . $_GET['fileName'];
 
         return ReflectionUtil::fetchClassesAndMethodes($path);
+    }
+
+    public function getCode() {
+        $project = $this->initProject();
+
+        $file = $_GET["file"];
+        if(!Project::isProjectFile($project, $file)) {
+            return "not allowed!";
+        }
+
+        return Functions::sliceCode($file, $_GET["line"], 7);
     }
 
     /**
@@ -58,7 +69,7 @@ class MainController {
      * @return array
      */
     public function getTestCode() {
-        Project::initProject();
+        $this->initProject();
 
         $className = $_GET["className"];
         $methodName = $_GET["methodName"];
@@ -77,7 +88,7 @@ class MainController {
             xdebug_disable();
         }
 
-        $project = Project::initProject();
+        $project = $this->initProject();
 
         error_reporting(E_ALL);
         ini_set("display_errors", 1);
@@ -121,5 +132,13 @@ class MainController {
             'profileData' => $profileData,
             'logs' => LogInterceptor::getInstance()->getLogs()
         );
+    }
+
+    private function initProject() {
+        return Project::initProject($_REQUEST['project']);
+    }
+
+    private function getProject() {
+        return Project::getProject($_REQUEST['project']);
     }
 }
