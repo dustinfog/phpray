@@ -9,6 +9,7 @@
 return array(
     array(
         "username" => "test",
-        "password" => "test"
+        "password" => "test",
+        "allowIps" => array("127.0.0.*"),
     ),
 );
