@@ -18,11 +18,11 @@ class Profiler {
     }
 
     public function enable() {
-        $this->xhprofLoaded && xhprof_enable(/*XHPROF_FLAGS_NO_BUILTINS | */XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
+        $this->project && $this->xhprofLoaded && xhprof_enable(/*XHPROF_FLAGS_NO_BUILTINS | */XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
     }
 
     public function disable() {
-        $profileData = $this->xhprofLoaded ? xhprof_disable() : null;
+        $profileData =  ($this->project && $this->xhprofLoaded) ? xhprof_disable() : null;
         return $this->simplifyProfileData($profileData);
     }
 

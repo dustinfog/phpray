@@ -41,6 +41,7 @@ class Project {
             $logInterceptions = $project["logInterceptions"];
             foreach($logInterceptions as $interception) {
                 $className = array_key_exists("class", $interception) ? $interception['class'] : null;
+
                 $logInterceptor->intercept($interception["method"], $interception["callback"], $className);
             }
         }

@@ -125,7 +125,7 @@ class MainController {
         $elapsed = Functions::getMillisecond() - $start;
 
         return array(
-            'return' => (is_object($ret) || is_array($ret)) ? print_r($ret, true) : $ret,
+            'return' => ReflectionUtil::watch($ret),
             'output' => $output,
             'errors' => $errorHandler->getErrors(),
             'elapsed'=> $elapsed,
@@ -135,10 +135,18 @@ class MainController {
     }
 
     private function initProject() {
-        return Project::initProject($_REQUEST['project']);
+        if(array_key_exists('project', $_REQUEST)) {
+            return Project::initProject($_REQUEST['project']);
+        }
+
+        return null;
     }
 
     private function getProject() {
-        return Project::getProject($_REQUEST['project']);
+        if(array_key_exists('project', $_REQUEST)) {
+            return Project::getProject($_REQUEST['project']);
+        }
+
+        return null;
     }
 }

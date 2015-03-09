@@ -33,22 +33,42 @@ class LogInterceptor {
         $args = func_get_args();
         $callbackKey = array_shift($args);
         $trace = array_shift($args);
+
+        $message = call_user_func_array($this->callbackMap[$callbackKey], $args);
+
+        if(!is_string($message)) {
+            $message = ReflectionUtil::watch($message);
+        }
+
         $this->logs[] = array(
             "logger" => $callbackKey,
-            "message" => call_user_func_array($this->callbackMap[$callbackKey], $args),
-            "backtrace" => Functions::simplifyBacktrace($trace)
+            "backtrace" => Functions::simplifyBacktrace($trace),
+            "message" => $message
         );
     }
 
     public function intercept($methodName, $interceptCallback, $className = null) {
         if(!extension_loaded("runkit")) return;
 
+        $isStatic = false;
         if($className == null) {
-            if(!function_exists($methodName)) return;
+            if(!function_exists($methodName)) {
+                trigger_error("the intercepted function " . $methodName . " does not exists");
+                return;
+            };
 
             $callbackKey = $methodName;
         } else if(class_exists($className)){
             $callbackKey = $className . "::" . $methodName;
+
+            try {
+                $method = new \ReflectionMethod($className, $methodName);
+            } catch(\ReflectionException $e) {
+                trigger_error("the intercepted method " . $callbackKey . " does not exists");
+                return;
+            }
+
+            $isStatic = $method->isStatic();
         } else {
             return;
         }
@@ -60,12 +80,17 @@ class LogInterceptor {
         array_unshift(\$args, '$callbackKey');
         call_user_func_array(array(\$interceptor, 'writeLog'),\$args);
         ";
+
+        $this->callbackMap[$callbackKey] = $interceptCallback;
+
         if($className == null) {
-            $this->callbackMap[$callbackKey] = $interceptCallback;
             runkit_function_redefine($methodName, '', $code);
         } else {
-            $this->callbackMap[$callbackKey] = $interceptCallback;
-            runkit_method_redefine($className, $methodName, '', $code);
+            $tags = RUNKIT_ACC_PUBLIC;
+            if($isStatic) {
+                $tags = $tags | RUNKIT_ACC_STATIC;
+            }
+            runkit_method_redefine($className, $methodName, '', $code,  $tags);
         }
     }
 }

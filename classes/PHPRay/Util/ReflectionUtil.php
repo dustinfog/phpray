@@ -13,6 +13,12 @@ use Nette\Reflection\Method;
 
 
 class ReflectionUtil {
+    const WATCH_MAX_DEPTH = 10;
+    const WATCH_MAX_CHILDREN = 100;
+
+    const ACCESSIBLE_PUBLIC = 1;
+    const ACCESSIBLE_PROTECTED = 2;
+    const ACCESSIBLE_PRIVATE = 3;
 
     /**
      * @param $file
@@ -120,6 +126,96 @@ class ReflectionUtil {
         }
 
         return $methodCode;
+    }
+
+    public static function watch($var) {
+        return self::watchInDepth($var, 1);
+    }
+
+    private static function watchInDepth(& $var, $depth) {
+        $dump = array();
+        if(is_object($var)) {
+            $dump["type"] = get_class($var);
+            if($depth < self::WATCH_MAX_DEPTH) {
+                $dump["children"] = self::dumpObjectChildren($var, $depth);
+            } else {
+                $dump["value"] = "{...}";
+            }
+        } else {
+            $dump["type"] = gettype($var);
+            if(is_array($var)) {
+                $dump["size"] = count($var);
+                if($depth < self::WATCH_MAX_DEPTH) {
+                    $dump["children"] = self::dumpArrayChildren($var, $depth);
+                } else {
+                    $dump["value"] = "[...]";
+                }
+            } else {
+                if(is_string($var)) {
+                    $dump["size"] = strlen($var);
+                }
+                if(!is_null($var)) {
+                    $dump["value"] = var_export($var, true);
+                }
+            }
+        }
+
+        return $dump;
+    }
+
+    private static function dumpObjectChildren(& $obj, $depth) {
+        $ref = new \ReflectionObject($obj);
+        $children = array();
+        $properties = $ref->getProperties();
+        foreach($properties as $property)
+        {
+            $name = $property->getName();
+            $accessible = $property->isPublic() ? self::ACCESSIBLE_PUBLIC : ($property->isProtected() ? self::ACCESSIBLE_PROTECTED : self::ACCESSIBLE_PRIVATE);
+
+            $property->setAccessible(true);
+            $value = $property->getValue($obj);
+            $subWatch = self::watchInDepth($value, $depth + 1);
+            $subWatch["name"] = $name;
+            $subWatch["accessible"] = $accessible;
+            if($property->isStatic()) {
+                $subWatch["isStatic"] = true;
+            }
+            $children[$name] = $subWatch;
+        }
+
+        $objVars = get_object_vars($obj);
+        foreach($objVars as $name => $value) {
+            if(array_key_exists($name, $children)) {
+                continue;
+            }
+
+            $subWatch = self::watchInDepth($value, $depth + 1);
+            $children["name"] = $name;
+            $children[$name] = $subWatch;
+        }
+
+        return array_values($children);
+    }
+
+    private static function dumpArrayChildren(& $array, $depth) {
+        $children = array();
+        $numOfChildren = 0;
+        foreach($array as $key => $value) {
+            $subWatch = self::watchInDepth($value, $depth + 1);
+            $subWatch["name"] = '['. $key . ']';
+            $children[] = $subWatch;
+
+            $numOfChildren ++;
+
+            if($numOfChildren >= self::WATCH_MAX_CHILDREN) {
+                $children[] = array(
+                    "type" => "..."
+                );
+                break;
+            }
+        }
+
+        return $children;
     }
 
     private static function getPrefix(Method $method, $className, $caller) {
