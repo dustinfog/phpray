@@ -10,12 +10,14 @@ namespace PHPRay\Util;
 
 
 class Project {
-    public static function getProjects() {
-        return config("projects");
+    public static function getProjects($user) {
+        return array_filter(Config::load("projects"), function($project) use ($user){
+            return array_key_exists('users', $project) && array_search($user, $project['users']) !== false;
+        });
     }
 
-    public static function getProject($projectName) {
-        $projects = self::getProjects();
+    public static function getProject($user, $projectName) {
+        $projects = self::getProjects($user);
 
         foreach($projects as $project) {
             if($project['name'] == $projectName) {
@@ -30,8 +32,8 @@ class Project {
         return Functions::dirContains($project["src"], $file);
     }
 
-    public static function initProject($projectName) {
-        $project = self::getProject($projectName);
+    public static function initProject($user, $projectName) {
+        $project = self::getProject($user, $projectName);
         $init = $project["init"];
 
         $init($project);

@@ -15,13 +15,15 @@ use PHPRay\Util\Project;
 use PHPRay\Util\ReflectionUtil;
 use Nette\Reflection\ClassType;
 use PHPRay\Util\Profiler;
+use PHPRay\Util\Config;
 
 class MainController {
     public function login() {
-        $users = config("passwd");
+        $users = Config::load("passwd");
 
         foreach($users as $user) {
             if($user["username"] == $_POST['username'] && $user["password"] == $_POST["password"]) {
+                $_SESSION['user'] = $_POST['username'];
                 return true;
             }
         }
@@ -30,7 +32,9 @@ class MainController {
     }
 
     public function getProjects() {
-        $projects = Project::getProjects();
+        if(!array_key_exists('user', $_SESSION)) return null;
+
+        $projects = Project::getProjects($_SESSION['user']);
 
         $ret = array();
         foreach($projects as $project) {
@@ -41,11 +45,15 @@ class MainController {
     }
 
     public function getFileTree() {
+        if(!array_key_exists('user', $_SESSION)) return null;
+
         $project = $this->getProject();
         return Functions::treeDir($project["src"]);
     }
 
     public function getClassesAndMethods() {
+        if(!array_key_exists('user', $_SESSION)) return null;
+
         $project = $this->initProject();
 
         $path = $project["src"] . DIRECTORY_SEPARATOR . $_GET['fileName'];
@@ -54,6 +62,8 @@ class MainController {
     }
 
     public function getCode() {
+        if(!array_key_exists('user', $_SESSION)) return null;
+
         $project = $this->initProject();
 
         $file = $_GET["file"];
@@ -69,6 +79,8 @@ class MainController {
      * @return array
      */
     public function getTestCode() {
+        if(!array_key_exists('user', $_SESSION)) return null;
+
         $this->initProject();
 
         $className = $_GET["className"];
@@ -84,6 +96,8 @@ class MainController {
     }
 
     public function runTest() {
+        if(!array_key_exists('user', $_SESSION)) return null;
+
         if(function_exists("xdebug_disable")) {
             xdebug_disable();
         }
@@ -136,7 +150,7 @@ class MainController {
 
     private function initProject() {
         if(array_key_exists('project', $_REQUEST)) {
-            return Project::initProject($_REQUEST['project']);
+            return Project::initProject($_SESSION['user'], $_REQUEST['project']);
         }
 
         return null;
@@ -144,7 +158,7 @@ class MainController {
 
     private function getProject() {
         if(array_key_exists('project', $_REQUEST)) {
-            return Project::getProject($_REQUEST['project']);
+            return Project::getProject($_SESSION['user'], $_REQUEST['project']);
         }
 
         return null;

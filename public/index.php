@@ -10,6 +10,8 @@ include_once("../bootstrap.php");
 
 $file = $_SERVER['DOCUMENT_ROOT'] . $_SERVER['PHP_SELF'];
 
+session_start();
+
 if (!\PHPRay\Util\Functions::isSameFile($file, __FILE__)) {
     include_once($file);
 } else if (array_key_exists("action", $_REQUEST)) {

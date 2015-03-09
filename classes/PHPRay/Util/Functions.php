@@ -166,6 +166,5 @@ class Functions {
             $_COOKIE = self::stripslashesDeep($_COOKIE);
             $_REQUEST = self::stripslashesDeep($_REQUEST);
         }
-
     }
 }
