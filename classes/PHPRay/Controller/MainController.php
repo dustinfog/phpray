@@ -8,6 +8,7 @@
 
 namespace PHPRay\Controller;
 
+use PHPRay\Util\Auth;
 use PHPRay\Util\ErrorHandler;
 use PHPRay\Util\Functions;
 use PHPRay\Util\LogInterceptor;
@@ -19,13 +20,9 @@ use PHPRay\Util\Config;
 
 class MainController {
     public function login() {
-        $users = Config::load("passwd");
-
-        foreach($users as $user) {
-            if($user["username"] == $_POST['username'] && $user["password"] == $_POST["password"]) {
-                $_SESSION['user'] = $_POST['username'];
-                return true;
-            }
+        if(Auth::auth($_POST['username'], $_POST['password'])) {
+            $_SESSION['user'] = $_POST['username'];
+            return true;
         }
 
         return false;
