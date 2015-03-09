@@ -6,11 +6,11 @@
  * Time: 下午3:49
  */
 
+session_start();
+
 include_once("../bootstrap.php");
 
 $file = $_SERVER['DOCUMENT_ROOT'] . $_SERVER['PHP_SELF'];
-
-session_start();
 
 if (!\PHPRay\Util\Functions::isSameFile($file, __FILE__)) {
     include_once($file);
