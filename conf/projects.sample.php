@@ -10,6 +10,7 @@ return array(
     array(
         'name' => 'php_library',
         'src' => '/The/Path/Of/Project/src',
+        'users' => array("test"),
         'init' => function($project) {
             require_once dirname($project['src']) . '/vendor/autoload.php';
         },
