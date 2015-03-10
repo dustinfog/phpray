@@ -11,9 +11,9 @@ namespace PHPRay\Util;
 
 class Project {
     public static function getProjects($user) {
-        return array_filter(Config::load("projects"), function($project) use ($user){
+        return array_values(array_filter(Config::load("projects"), function($project) use ($user){
             return array_key_exists('users', $project) && in_array($user, $project['users']);
-        });
+        }));
     }
 
     public static function getProject($user, $projectName) {
