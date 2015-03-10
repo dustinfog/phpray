@@ -11,7 +11,7 @@ namespace PHPRay\Util;
 
 class Auth {
     public static function auth($userName, $password) {
-        $users = Config::load("passwd");
+        $users = self::getUsers();
 
         foreach($users as $user) {
             if($user["username"] == $userName && $user["password"] == $password && self::isValidIP(self::getIP(), $user["allowIps"])) {
@@ -20,6 +20,10 @@ class Auth {
 
             return false;
         }
+    }
+
+    public static function getUsers() {
+        return Config::load("passwd");
     }
 
     public static function isValidIP($ip, $allowedIps){

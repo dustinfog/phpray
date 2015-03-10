@@ -59,7 +59,7 @@ class MainController {
     }
 
     public function getCode() {
-        if(!array_key_exists('user', $_SESSION)) return null;
+        if(!$this->isValidUser()) return null;
 
         $project = $this->initProject();
 
@@ -147,7 +147,8 @@ class MainController {
 
     private function isValidUser() {
         if($_SERVER['REMOTE_ADDR'] == "127.0.0.1" && !array_key_exists('user', $_SESSION)) {
-            $_SESSION['user'] = "test";
+            $users = Auth::getUsers();
+            $_SESSION['user'] = $users[0]["username"];
         }
 
         return array_key_exists('user', $_SESSION);
