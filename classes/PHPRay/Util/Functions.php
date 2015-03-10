@@ -134,6 +134,7 @@ class Functions {
 
         if($focusStartPos != 0) {
             $subCode = "..." . $subCode;
+            $from --;
         }
 
         if($focusEndPos != strlen($code)) {
