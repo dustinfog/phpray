@@ -37,24 +37,28 @@ class Project {
         $init = $project["init"];
 
         $init($project);
+        return $project;
+    }
 
+    public static function interceptLogs($project) {
         if(array_key_exists("logInterceptions", $project)) {
-            $logInterceptor = LogInterceptor::getInstance();
+            $logInterceptor = LogInterceptorFactory::getLogInterceptor();
             $logInterceptions = $project["logInterceptions"];
             foreach($logInterceptions as $interception) {
                 $className = array_key_exists("class", $interception) ? $interception['class'] : null;
-
-                $logInterceptor->intercept($interception["method"], $interception["callback"], $className);
+                try {
+                    $logInterceptor->intercept($interception["method"], $interception["callback"], $className);
+                } catch (\Exception $e) {
+                    trigger_error($e->getMessage());
+                }
             }
         }
+    }
 
-        if(array_key_exists('fileName', $_REQUEST)) {
-            $file = $project["src"] . DIRECTORY_SEPARATOR . $_REQUEST['fileName'];
-            if(file_exists($file) && !is_dir($file) && is_readable($file)) {
-                require_once($file);
-            }
+    public static function includeProjectFile($project, $fileName) {
+        $file = $project["src"] . DIRECTORY_SEPARATOR . $fileName;
+        if(file_exists($file) && !is_dir($file) && is_readable($file)) {
+            require_once($file);
         }
-
-        return $project;
     }
 }

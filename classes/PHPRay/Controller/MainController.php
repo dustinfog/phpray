@@ -11,12 +11,12 @@ namespace PHPRay\Controller;
 use PHPRay\Util\Auth;
 use PHPRay\Util\ErrorHandler;
 use PHPRay\Util\Functions;
-use PHPRay\Util\LogInterceptor;
+use PHPRay\Util\LogInterceptorFactory;
+use PHPRay\Util\RunkitLogInterceptor;
 use PHPRay\Util\Project;
 use PHPRay\Util\ReflectionUtil;
 use Nette\Reflection\ClassType;
 use PHPRay\Util\Profiler;
-use PHPRay\Util\Config;
 
 class MainController {
     public function login() {
@@ -52,8 +52,9 @@ class MainController {
         if(!$this->isValidUser()) return null;
 
         $project = $this->initProject();
+        $this->includeProjectFile($project);
 
-        $path = $project["src"] . DIRECTORY_SEPARATOR . $_GET['fileName'];
+        $path = $project["src"] . DIRECTORY_SEPARATOR . $_POST['fileName'];
 
         return ReflectionUtil::fetchClassesAndMethodes($path);
     }
@@ -61,14 +62,14 @@ class MainController {
     public function getCode() {
         if(!$this->isValidUser()) return null;
 
-        $project = $this->initProject();
+        $project = $this->getProject();
 
-        $file = $_GET["file"];
+        $file = $_POST["file"];
         if(!Project::isProjectFile($project, $file)) {
             return "not allowed!";
         }
 
-        return Functions::sliceCode($file, $_GET["line"], 7);
+        return Functions::sliceCode($file, $_POST["line"], 7);
     }
 
     /**
@@ -78,10 +79,11 @@ class MainController {
     public function getTestCode() {
         if(!$this->isValidUser()) return null;
 
-        $this->initProject();
+        $project = $this->initProject();
+        $this->includeProjectFile($project);
 
-        $className = $_GET["className"];
-        $methodName = $_GET["methodName"];
+        $className = $_POST["className"];
+        $methodName = $_POST["methodName"];
 
         $class = new ClassType($className);
         $method = $class->getMethod($methodName);
@@ -100,6 +102,13 @@ class MainController {
         }
 
         $project = $this->initProject();
+        Project::interceptLogs($project);
+        $this->includeProjectFile($project);
+
+        if(array_key_exists('className', $_POST) && !empty($_POST['className'])) {
+            ReflectionUtil::publicityAllMethods($_POST['className']);
+        }
+
 
         error_reporting(E_ALL);
         ini_set("display_errors", 1);
@@ -141,7 +150,7 @@ class MainController {
             'errors' => $errorHandler->getErrors(),
             'elapsed'=> $elapsed,
             'profileData' => $profileData,
-            'logs' => LogInterceptor::getInstance()->getLogs()
+            'logs' => LogInterceptorFactory::getLogInterceptor()->getLogs()
         );
     }
 
@@ -168,5 +177,11 @@ class MainController {
         }
 
         return null;
+    }
+
+    private function includeProjectFile($project) {
+        if(!empty($project) && array_key_exists('fileName', $_POST)){
+            Project::includeProjectFile($project, $_POST['fileName']);
+        }
     }
 }

@@ -7,6 +7,8 @@
  */
 namespace PHPRay\Util;
 
+use Nette\Reflection\Method;
+
 class Functions {
     /**
      * @return int
