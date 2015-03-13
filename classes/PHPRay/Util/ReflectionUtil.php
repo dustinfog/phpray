@@ -63,6 +63,10 @@ class ReflectionUtil {
         $ret = array();
         foreach($classes as $class) {
             $classType = new ClassType($class);
+            if($classType->isAbstract()) {
+                continue;
+            }
+
             $ret[] = array(
                 "name" => $class,
                 "description" => self::fetchDocComment($classType->getDocComment()),
@@ -79,19 +83,18 @@ class ReflectionUtil {
 
         $methodInfos = array();
         foreach($methods as $method) {
-            if(!$method->isAbstract() && $method->isPublic()) {
-                $methodInfos[] = array(
-                    "name" => self::getMethodSign($method),
-                    "call" => self::getMethodCall($method, $class->getName()),
-                    "shortName" => $method->name,
-                    "isStatic" => $method->isStatic(),
-                    "isConstructor"=> $method->isConstructor(),
-                    "hasTestCase" => $method->hasAnnotation("testCase"),
-                    "isGood" => self::isGood($method),
-                    "class" => $class->getName(),
-                    "description" => self::fetchDocComment($method->getDocComment())
-                );
-            }
+            $methodInfos[] = array(
+                "name" => self::getMethodSign($method, $class->getName()),
+                "call" => self::getMethodCall($method, $class->getName()),
+                "shortName" => $method->name,
+                "isStatic" => $method->isStatic(),
+                "accessible" => $method->isPublic() ? self::ACCESSIBLE_PUBLIC : ($method->isProtected() ? self::ACCESSIBLE_PROTECTED : self::ACCESSIBLE_PRIVATE),
+                "isConstructor"=> $method->isConstructor(),
+                "hasTestCase" => $method->hasAnnotation("testCase"),
+                "isGood" => self::isGood($method),
+                "class" => $class->getName(),
+                "description" => self::fetchDocComment($method->getDocComment())
+            );
         }
 
         usort($methodInfos, function($info1, $info2)
@@ -130,6 +133,38 @@ class ReflectionUtil {
 
     public static function watch($var) {
         return self::watchInDepth($var, 1);
+    }
+
+    public static function publicityAllMethods($className) {
+        $class = new ClassType($className);
+        $methods = $class->getMethods();
+
+        foreach($methods as $method) {
+            self::publicityMethod($method);
+        }
+    }
+
+    public static function publicityMethod(Method $method) {
+        if($method->isPublic() || !extension_loaded("runkit") ) return;
+
+        $className = $method->getDeclaringClass()->getName();
+        $methodName = $method->getName();
+        $formalParameters = self::getFormalParameters($method);
+
+        $tags = RUNKIT_ACC_PUBLIC;
+        if($method->isStatic()) {
+            $tags = $tags | RUNKIT_ACC_STATIC;
+            $code = "self::";
+        }
+        else {
+            $code = "\$this->";
+        }
+
+        $newName = $methodName . "_" . rand();
+        $code .= $newName . "(" . self::getActualParameters($method) . ");";
+
+        runkit_method_rename($className, $methodName, $newName);
+        runkit_method_add($className, $methodName, $formalParameters, $code, $tags);
     }
 
     private static function watchInDepth(& $var, $depth) {
@@ -258,76 +293,80 @@ class ReflectionUtil {
     }
 
     private static function getMethodCall(Method $method, $className, $reserveDefault = false, $caller="") {
-        $parameters = $method->getParameters();
-
         if($method->isConstructor()) {
             $call = "new " . $className;
         } else {
             $call = self::getPrefix($method, $className, $caller) . $method->getName();
         }
 
-        $call .= "(";
-        $first = true;
-        foreach($parameters as $parameter) {
-            if(!$parameter->isDefaultValueAvailable() || $reserveDefault) {
-                if($first) {
-                    $first = false;
-                } else {
-                    $call .= ", ";
-                }
-
-                $paramName = $parameter->getName();
-                $call .= "\$" . $paramName;
-            }
-        }
-
-        $call .= ")";
+        $call .= "(" . self::getActualParameters($method, $reserveDefault) . ")";
 
         return $call;
     }
 
-    private static function getMethodSign(Method $method) {
-        $parameters = $method->getParameters();
+    private static function getMethodSign(Method $method, $className) {
+        $sign = $method->getName()
+            . "("
+            . self::getFormalParameters($method, true)
+            . ") : "
+            . ( $method->isConstructor() ? $className : self::getReturnType($method));
 
-        $paramTypes = self::getParamTypes($method);
+        return $sign;
+    }
 
-        $sign = $method->getName() . "(";
-        $first = true;
-        foreach($parameters as $parameter) {
-            if($first) {
-                $first = false;
-            } else {
-                $sign .= ", ";
-            }
+    public static function getFormalParameters(Method $method, $typeFromComment = false) {
+        $formalParameters = array();
 
+        $paramTypes = null;
+        if($typeFromComment) {
+            $paramTypes = self::getParamTypes($method);
+        }
+
+        foreach($method->getParameters() as $parameter) {
+            $type = $parameter->getClassName();
             $paramName = $parameter->getName();
-            $className = $parameter->getClassName();
-            if(!$className && array_key_exists($paramName, $paramTypes)) {
-                $className = $paramTypes[$paramName];
+            if(empty($type) && $typeFromComment && array_key_exists($paramName, $paramTypes)) {
+                $type = $paramTypes[$paramName];
             }
 
-            if($className) {
-                $sign .= $className . " ";
+            if(!empty($type)) {
+                $formalParameter = $type . " ";
+            } else {
+                $formalParameter = "";
             }
 
-            $sign .= "\$" . $paramName;
+            if($parameter->isPassedByReference()) {
+                $formalParameter .= "&";
+            }
 
-            if($parameter->isDefaultValueAvailable()) {
-                $sign .= " = ";
+            $formalParameter .= "\$" . $paramName;
+            if ($parameter->isDefaultValueAvailable()) {
                 $value = $parameter->getDefaultValue();
-                if(is_object($value)) {
-                    $sign .= "object";
-                } else if(is_array($value)) {
-                    $sign .= "array";
-                } else {
-                    $sign .= var_export($value, true);
+                $export = var_export($value, true);
+                if(is_array($value)) {
+                    $export = preg_replace("/$|\\s+/", " ", $export);
+                    $export = str_replace("\n", "", $export);
                 }
+
+                $formalParameter.= " = " . str_replace("\n", "", $export);
+            }
+
+            $formalParameters[] = $formalParameter;
+        }
+
+        return implode(", ", $formalParameters);
+    }
+
+    public static function getActualParameters(Method $method, $reserveDefault = true) {
+        $actualParameters = array();
+
+        foreach($method->getParameters() as $parameter) {
+            if(!$parameter->isDefaultValueAvailable() || $reserveDefault) {
+                $actualParameters[] = "\$" . $parameter->getName();
             }
         }
 
-        $sign .= ") : " . ( $method->isConstructor() ? $method->getDeclaringClass()->getName() : self::getReturnType($method));
-
-        return $sign;
+        return implode(", ", $actualParameters);
     }
 
     private static function getParamTypes(Method $method) {
