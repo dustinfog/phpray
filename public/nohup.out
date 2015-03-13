@@ -973,3 +973,63 @@ Press Ctrl-C to quit.
 [Tue Mar 10 15:44:20 2015] 127.0.0.1:53733 [200]: /?action=main%2EgetProjects
 [Tue Mar 10 15:45:40 2015] 127.0.0.1:53737 [200]: /
 [Tue Mar 10 15:45:42 2015] 127.0.0.1:53738 [200]: /?action=main%2EgetProjects
+[Tue Mar 10 16:03:27 2015] 127.0.0.1:53908 [200]: /
+[Tue Mar 10 16:03:29 2015] 127.0.0.1:53910 [200]: /?action=main%2EgetProjects
+[Tue Mar 10 16:05:43 2015] 127.0.0.1:53921 [200]: /
+[Tue Mar 10 16:05:45 2015] 127.0.0.1:53923 [200]: /?action=main%2EgetProjects
+[Tue Mar 10 16:05:47 2015] 127.0.0.1:53925 [200]: /?project=php%5Flibrary&action=main%2EgetFileTree
+[Tue Mar 10 16:05:49 2015] 127.0.0.1:53927 [200]: /?fileName=FFLibrary%2FHello%2Ephp&project=php%5Flibrary&action=main%2EgetClassesAndMethods
+[Fri Mar 13 10:14:55 2015] 127.0.0.1:49910 Invalid request (Unexpected EOF)
+[Fri Mar 13 10:14:55 2015] 127.0.0.1:49911 Invalid request (Unexpected EOF)
+[Fri Mar 13 10:14:55 2015] 127.0.0.1:49912 Invalid request (Unexpected EOF)
+[Fri Mar 13 14:20:31 2015] PHP Parse error:  syntax error, unexpected '}', expecting identifier (T_STRING) in /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Util/Functions.php on line 173
+[Fri Mar 13 14:20:43 2015] 127.0.0.1:52165 Invalid request (Unexpected EOF)
+[Fri Mar 13 14:20:43 2015] 127.0.0.1:52166 Invalid request (Unexpected EOF)
+[Fri Mar 13 14:20:43 2015] 127.0.0.1:52167 Invalid request (Unexpected EOF)
+[Fri Mar 13 14:20:43 2015] 127.0.0.1:52168 Invalid request (Unexpected EOF)
+[Fri Mar 13 14:20:43 2015] 127.0.0.1:52169 Invalid request (Unexpected EOF)
+[Fri Mar 13 15:06:17 2015] PHP Warning:  phpinfo(): It is not safe to rely on the system's timezone settings. You are *required* to use the date.timezone setting or the date_default_timezone_set() function. In case you used any of those methods and you are still getting this warning, you most likely misspelled the timezone identifier. We selected the timezone 'UTC' for now, but please set date.timezone to select your timezone. in /Users/panzd/PhpstormProjects/phpray/public/phpinfo.php on line 9
+[Fri Mar 13 15:06:26 2015] 127.0.0.1:52461 Invalid request (Unexpected EOF)
+[Fri Mar 13 15:06:26 2015] 127.0.0.1:52462 Invalid request (Unexpected EOF)
+[Fri Mar 13 15:06:26 2015] 127.0.0.1:52463 Invalid request (Unexpected EOF)
+[Fri Mar 13 15:06:26 2015] 127.0.0.1:52464 Invalid request (Unexpected EOF)
+[Fri Mar 13 15:36:46 2015] PHP Fatal error:  Call to private method FFLibrary\Hello::treeFile() from context 'PHPRay\Controller\MainController' in /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Controller/MainController.php(132) : eval()'d code on line 5
+[Fri Mar 13 15:40:27 2015] PHP Fatal error:  Call to private method FFLibrary\Hello::treeFile() from context 'PHPRay\Controller\MainController' in /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Controller/MainController.php(137) : eval()'d code on line 5
+[Fri Mar 13 15:40:31 2015] PHP Fatal error:  Call to private method FFLibrary\Hello::treeFile() from context 'PHPRay\Controller\MainController' in /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Controller/MainController.php(137) : eval()'d code on line 5
+[Fri Mar 13 15:41:16 2015] PHP Fatal error:  Uncaught exception 'ReflectionException' with message 'Class className does not exist' in /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Controller/MainController.php:110
+Stack trace:
+#0 /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Controller/MainController.php(110): ReflectionClass->__construct('className')
+#1 /Users/panzd/PhpstormProjects/phpray/public/index.php(29): PHPRay\Controller\MainController->runTest()
+#2 {main}
+  thrown in /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Controller/MainController.php on line 110
+[Fri Mar 13 15:43:08 2015] PHP Fatal error:  Undefined constant 'FFLibrary\Hello' in /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Util/Functions.php(197) : runkit runtime-created function on line 1
+[Fri Mar 13 15:44:51 2015] PHP Fatal error:  Undefined constant 'FFLibrary\Hello' in /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Util/Functions.php(197) : runkit runtime-created function on line 1
+[Fri Mar 13 15:44:54 2015] PHP Fatal error:  Undefined constant 'FFLibrary\Hello' in /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Util/Functions.php(197) : runkit runtime-created function on line 1
+[Fri Mar 13 16:34:43 2015] PHP Fatal error:  Uncaught exception 'ReflectionException' with message 'Method FFLibrary\Hello::treeFile() does not exist' in /Users/panzd/PhpstormProjects/phpray/vendor/nette/reflection/src/Reflection/Parameter.php:38
+Stack trace:
+#0 /Users/panzd/PhpstormProjects/phpray/vendor/nette/reflection/src/Reflection/Parameter.php(38): ReflectionParameter->__construct(Array, 'q\x00\x00\x00\x00\x00\x00')
+#1 /Users/panzd/PhpstormProjects/phpray/vendor/nette/reflection/src/Reflection/Method.php(126): Nette\Reflection\Parameter->__construct(Array, 'q\x00\x00\x00\x00\x00\x00')
+#2 /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Util/ReflectionUtil.php(325): Nette\Reflection\Method->getParameters()
+#3 /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Util/ReflectionUtil.php(166): PHPRay\Util\ReflectionUtil::getFormalParameters(Object(Nette\Reflection\Method))
+#4 /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Util/ReflectionUtil.php(143): PHPRay\Util\ReflectionUtil::publicityMethod(Object(Nette\Reflection\Method))
+#5 /Users/panzd/ in /Users/panzd/PhpstormProjects/phpray/vendor/nette/reflection/src/Reflection/Parameter.php on line 38
+[Fri Mar 13 16:36:12 2015] PHP Fatal error:  Uncaught exception 'ReflectionException' with message 'Method FFLibrary\Hello::treeFile() does not exist' in /Users/panzd/PhpstormProjects/phpray/vendor/nette/reflection/src/Reflection/Parameter.php:38
+Stack trace:
+#0 /Users/panzd/PhpstormProjects/phpray/vendor/nette/reflection/src/Reflection/Parameter.php(38): ReflectionParameter->__construct(Array, 'q\x00\x00\x00\x00\x00\x00')
+#1 /Users/panzd/PhpstormProjects/phpray/vendor/nette/reflection/src/Reflection/Method.php(126): Nette\Reflection\Parameter->__construct(Array, 'q\x00\x00\x00\x00\x00\x00')
+#2 /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Util/ReflectionUtil.php(325): Nette\Reflection\Method->getParameters()
+#3 /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Util/ReflectionUtil.php(166): PHPRay\Util\ReflectionUtil::getFormalParameters(Object(Nette\Reflection\Method))
+#4 /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Util/ReflectionUtil.php(143): PHPRay\Util\ReflectionUtil::publicityMethod(Object(Nette\Reflection\Method))
+#5 /Users/panzd/ in /Users/panzd/PhpstormProjects/phpray/vendor/nette/reflection/src/Reflection/Parameter.php on line 38
+[Fri Mar 13 16:36:48 2015] PHP Fatal error:  Uncaught exception 'ReflectionException' with message 'Method FFLibrary\Hello::treeFile() does not exist' in /Users/panzd/PhpstormProjects/phpray/vendor/nette/reflection/src/Reflection/Parameter.php:38
+Stack trace:
+#0 /Users/panzd/PhpstormProjects/phpray/vendor/nette/reflection/src/Reflection/Parameter.php(38): ReflectionParameter->__construct(Array, 'q\x00\x00\x00\x00\x00\x00')
+#1 /Users/panzd/PhpstormProjects/phpray/vendor/nette/reflection/src/Reflection/Method.php(126): Nette\Reflection\Parameter->__construct(Array, 'q\x00\x00\x00\x00\x00\x00')
+#2 /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Util/ReflectionUtil.php(325): Nette\Reflection\Method->getParameters()
+#3 /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Util/ReflectionUtil.php(166): PHPRay\Util\ReflectionUtil::getFormalParameters(Object(Nette\Reflection\Method))
+#4 /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Util/ReflectionUtil.php(143): PHPRay\Util\ReflectionUtil::publicityMethod(Object(Nette\Reflection\Method))
+#5 /Users/panzd/ in /Users/panzd/PhpstormProjects/phpray/vendor/nette/reflection/src/Reflection/Parameter.php on line 38
+[Fri Mar 13 16:56:51 2015] PHP Parse error:  syntax error, unexpected end of file in /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Util/ReflectionUtil.php(167) : runkit runtime-created function on line 1
+[Fri Mar 13 16:56:51 2015] PHP Fatal error:  runkit_method_add(): Cannot create temporary function in /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Util/ReflectionUtil.php on line 167
+[Fri Mar 13 16:57:14 2015] PHP Parse error:  syntax error, unexpected '~' in /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Util/ReflectionUtil.php(167) : runkit runtime-created function on line 1
+[Fri Mar 13 16:57:14 2015] PHP Fatal error:  runkit_method_add(): Cannot create temporary function in /Users/panzd/PhpstormProjects/phpray/classes/PHPRay/Util/ReflectionUtil.php on line 167
