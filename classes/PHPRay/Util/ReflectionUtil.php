@@ -91,7 +91,6 @@ class ReflectionUtil {
                 "accessible" => $method->isPublic() ? self::ACCESSIBLE_PUBLIC : ($method->isProtected() ? self::ACCESSIBLE_PROTECTED : self::ACCESSIBLE_PRIVATE),
                 "isConstructor"=> $method->isConstructor(),
                 "hasTestCase" => $method->hasAnnotation("testCase"),
-                "isGood" => self::isGood($method),
                 "class" => $class->getName(),
                 "description" => self::fetchDocComment($method->getDocComment())
             );
@@ -286,10 +285,6 @@ class ReflectionUtil {
         }
 
         return $code . PHP_EOL;
-    }
-
-    private static function isGood(Method $method) {
-        return $method->name[0] == "_" || $method->getAnnotation("good");
     }
 
     private static function getMethodCall(Method $method, $className, $reserveDefault = false, $caller="") {
