@@ -13,13 +13,15 @@ class Auth {
     public static function auth($userName, $password) {
         $users = self::getUsers();
 
+        $found = false;
         foreach($users as $user) {
             if($user["username"] == $userName && $user["password"] == $password && self::isValidIP(self::getIP(), $user["allowIps"])) {
-                return true;
+                $found = true;
+                break;
             }
-
-            return false;
         }
+
+        return $found;
     }
 
     public static function getUsers() {
