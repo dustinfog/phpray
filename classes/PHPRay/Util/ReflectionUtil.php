@@ -136,13 +136,13 @@ class ReflectionUtil {
 
     public static function publicityAllMethods($className) {
         self::defineMagicCall($className);
-        self::defineMagicStaticCall($className);
+        self::defineMagicCallStatic($className);
     }
 
     private static function defineMagicCall($className) {
         $magicCall = "__call";
-        $magicCallBackup = $magicCall . "_" . rand();
         if(method_exists($className, $magicCall)) {
+            $magicCallBackup = $magicCall . "_" . rand();
             runkit_method_rename($className, $magicCall, $magicCallBackup);
             $elseCall = "\$this->" . $magicCallBackup . "(\$methodName, \$arguments)";
         } else {
@@ -157,10 +157,10 @@ class ReflectionUtil {
             }");
     }
 
-    private static function defineMagicStaticCall($className) {
-        $magicCall = "__staticCall";
-        $magicCallBackup = $magicCall . "_" . rand();
+    private static function defineMagicCallStatic($className) {
+        $magicCall = "__callStatic";
         if(method_exists($className, $magicCall)) {
+            $magicCallBackup = $magicCall . "_" . rand();
             runkit_method_rename($className, $magicCall, $magicCallBackup);
             $elseCall = $className . "::" . $magicCallBackup . "(\$methodName, \$arguments)";
         } else {
@@ -168,8 +168,8 @@ class ReflectionUtil {
         }
 
         runkit_method_add($className, $magicCall, "\$methodName, \$arguments", "
-            if(method_exists(\$this, \$methodName)) {
-                return call_user_func_array(array(\$this, \$methodName), \$arguments);
+            if(method_exists('$className', \$methodName)) {
+                return call_user_func_array(array('$className', \$methodName), \$arguments);
             } else {
                 $elseCall;
             }", RUNKIT_ACC_PUBLIC | RUNKIT_ACC_STATIC);
