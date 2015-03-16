@@ -135,35 +135,44 @@ class ReflectionUtil {
     }
 
     public static function publicityAllMethods($className) {
-        $class = new ClassType($className);
-        $methods = $class->getMethods();
-
-        foreach($methods as $method) {
-            self::publicityMethod($method);
-        }
+        self::defineMagicCall($className);
+        self::defineMagicStaticCall($className);
     }
 
-    public static function publicityMethod(Method $method) {
-        if($method->isPublic() || !extension_loaded("runkit") ) return;
-
-        $className = $method->getDeclaringClass()->getName();
-        $methodName = $method->getName();
-        $formalParameters = self::getFormalParameters($method);
-
-        $tags = RUNKIT_ACC_PUBLIC;
-        if($method->isStatic()) {
-            $tags = $tags | RUNKIT_ACC_STATIC;
-            $code = "self::";
-        }
-        else {
-            $code = "\$this->";
+    private static function defineMagicCall($className) {
+        $magicCall = "__call";
+        $magicCallBackup = $magicCall . "_" . rand();
+        if(method_exists($className, $magicCall)) {
+            runkit_method_rename($className, $magicCall, $magicCallBackup);
+            $elseCall = "\$this->" . $magicCallBackup . "(\$methodName, \$arguments)";
+        } else {
+            $elseCall = "throw new \\BadMethodCallException('Call to undefined method " . $className . "::\$methodName()')";
         }
 
-        $newName = $methodName . "_" . rand();
-        $code .= $newName . "(" . self::getActualParameters($method) . ");";
+        runkit_method_add($className, $magicCall, "\$methodName, \$arguments", "
+            if(method_exists(\$this, \$methodName)) {
+                return call_user_func_array(array(\$this, \$methodName), \$arguments);
+            } else {
+                $elseCall;
+            }");
+    }
 
-        runkit_method_rename($className, $methodName, $newName);
-        runkit_method_add($className, $methodName, $formalParameters, $code, $tags);
+    private static function defineMagicStaticCall($className) {
+        $magicCall = "__staticCall";
+        $magicCallBackup = $magicCall . "_" . rand();
+        if(method_exists($className, $magicCall)) {
+            runkit_method_rename($className, $magicCall, $magicCallBackup);
+            $elseCall = $className . "::" . $magicCallBackup . "(\$methodName, \$arguments)";
+        } else {
+            $elseCall = "throw new \\BadMethodCallException('Call to undefined method " . $className . "::\$methodName()')";
+        }
+
+        runkit_method_add($className, $magicCall, "\$methodName, \$arguments", "
+            if(method_exists(\$this, \$methodName)) {
+                return call_user_func_array(array(\$this, \$methodName), \$arguments);
+            } else {
+                $elseCall;
+            }", RUNKIT_ACC_PUBLIC | RUNKIT_ACC_STATIC);
     }
 
     private static function watchInDepth(& $var, $depth) {
