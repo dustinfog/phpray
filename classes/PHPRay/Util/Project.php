@@ -41,16 +41,18 @@ class Project {
     }
 
     public static function interceptLogs($project) {
-        if(array_key_exists("logInterceptions", $project)) {
-            $logInterceptor = LogInterceptorFactory::getLogInterceptor();
-            $logInterceptions = $project["logInterceptions"];
-            foreach($logInterceptions as $interception) {
-                $className = array_key_exists("class", $interception) ? $interception['class'] : null;
-                try {
-                    $logInterceptor->intercept($interception["method"], $interception["callback"], $className);
-                } catch (\Exception $e) {
-                    trigger_error($e->getMessage());
-                }
+        if(empty($project) || !array_key_exists("logInterceptions", $project)) {
+            return;
+        }
+
+        $logInterceptor = LogInterceptorFactory::getLogInterceptor();
+        $logInterceptions = $project["logInterceptions"];
+        foreach($logInterceptions as $interception) {
+            $className = array_key_exists("class", $interception) ? $interception['class'] : null;
+            try {
+                $logInterceptor->intercept($interception["method"], $interception["callback"], $className);
+            } catch (\Exception $e) {
+                trigger_error($e->getMessage());
             }
         }
     }
