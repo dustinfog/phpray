@@ -136,6 +136,7 @@ class MainController {
         $profileData = $profiler->disable();
         $output = ob_get_clean();
         $elapsed = Functions::getMillisecond() - $start;
+        $errorHandler->catchTheLastError();
 
         return array(
             'return' => ReflectionUtil::watch($ret),

@@ -92,6 +92,10 @@ class Functions {
     }
 
     public static function sliceCode($file, $focusLine, $diff) {
+        if(!file_exists($file)) {
+            return "";
+        }
+
         $code = highlight_file($file, true);
         $code = substr($code, 36, strlen($code) - 51);
 

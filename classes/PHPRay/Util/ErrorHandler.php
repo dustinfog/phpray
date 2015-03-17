@@ -30,63 +30,34 @@ class ErrorHandler {
         return $this->errors;
     }
 
-    public function errorHandler($severity, $msg, $file, $line) {
-        $severityName = null;
-
-        switch ($severity) {
-            case E_WARNING:
-                $severityName = "Warning";
-                break;
-            case E_PARSE:
-                $severityName = "Parse";
-                break;
-            case E_NOTICE:
-                $severityName = "Notice";
-                break;
-            case E_CORE_ERROR:
-                $severityName = "CoreError";
-                break;
-            case E_CORE_WARNING:
-                $severityName = "CoreWarning";
-                break;
-            case E_COMPILE_ERROR:
-                $severityName = "CompileError";
-                break;
-            case E_COMPILE_WARNING:
-                $severityName = "CompileWarning";
-                break;
-            case E_USER_ERROR:
-                $severityName = "UserError";
-                break;
-            case E_USER_WARNING:
-                $severityName = "UserWarning";
-                break;
-            case E_USER_NOTICE:
-                $severityName = "UserNotice";
-                break;
-            case E_STRICT:
-                $severityName = "Strict";
-                break;
-            case E_RECOVERABLE_ERROR:
-                $severityName = "RecoverableError";
-                break;
-            case E_DEPRECATED:
-                $severityName = "Deprecated";
-                break;
-            case E_USER_DEPRECATED:
-                $severityName = "UserDeprecated";
-                break;
-            default:
-                $severityName = 'Error';
-        }
-
+    public function errorHandler($type, $msg, $file, $line) {
         $this->errors[] = array(
-            "type" => $severityName,
+            "type" => $type,
             "message" => $msg,
             "file" => $file,
             "line" => $line,
             "backtrace" => Functions::simplifyBacktrace(debug_backtrace())
         );
+
         return true;
+    }
+
+    public function catchTheLastError() {
+        $error = error_get_last();
+        if(self::isFatalError($error['type'])) {
+            $error["backtrace"] = array();
+            $this->errors[] = $error;
+        }
+    }
+
+    private static function isFatalError($type)
+    {
+        return $type == E_ERROR
+        || $type == E_PARSE
+        || $type == E_USER_ERROR
+        || $type == E_CORE_ERROR
+        || $type == E_CORE_WARNING
+        || $type == E_COMPILE_ERROR
+        || $type == E_COMPILE_WARNING;
     }
 }
