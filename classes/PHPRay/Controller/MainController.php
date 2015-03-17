@@ -61,14 +61,7 @@ class MainController {
 
     public function getCode() {
         if(!$this->isValidUser()) return null;
-
-        $project = $this->getProject();
-
         $file = $_POST["file"];
-        if(!Project::isProjectFile($project, $file)) {
-            return "not allowed!";
-        }
-
         return Functions::sliceCode($file, $_POST["line"], 7);
     }
 
