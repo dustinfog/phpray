@@ -133,6 +133,7 @@ class Functions {
 
         $subCode = preg_replace("/<span style=\"color: ([^\"]+)\">/", "<font color=\"\$1\">", $subCode);
         $subCode = str_replace("</span>", "</font>", $subCode);
+        $subCode = str_replace("\r", "", $subCode);
 
         if($focusStartPos != 0) {
             $subCode = "..." . $subCode;
