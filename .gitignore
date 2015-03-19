@@ -4,4 +4,5 @@ conf/passwd.php
 conf/projects/*.dev.php
 public/nohup.out
 public/test.php
+logs/error.log
 .*
