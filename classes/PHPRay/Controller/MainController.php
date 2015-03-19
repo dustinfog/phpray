@@ -29,7 +29,7 @@ class MainController {
     }
 
     public function getProjects() {
-        if(!$this->isValidUser()) return null;
+        if(!$this->isValidUser()) return "loggedOut";
 
         $projects = Project::getProjects($_SESSION['user']);
 
@@ -42,14 +42,14 @@ class MainController {
     }
 
     public function getFileTree() {
-        if(!$this->isValidUser()) return null;
+        if(!$this->isValidUser()) return "loggedOut";
 
         $project = $this->getProject();
         return Functions::treeDir($project["src"]);
     }
 
     public function getClassesAndMethods() {
-        if(!$this->isValidUser()) return null;
+        if(!$this->isValidUser()) return "loggedOut";
 
         $project = $this->initProject();
         $this->includeProjectFile($project);
@@ -60,7 +60,7 @@ class MainController {
     }
 
     public function getCode() {
-        if(!$this->isValidUser()) return null;
+        if(!$this->isValidUser()) return "loggedOut";
         $file = $_POST["file"];
         return Functions::sliceCode($file, $_POST["line"], 7);
     }
@@ -70,7 +70,7 @@ class MainController {
      * @return array
      */
     public function getTestCode() {
-        if(!$this->isValidUser()) return null;
+        if(!$this->isValidUser()) return "loggedOut";
 
         $project = $this->initProject();
         $this->includeProjectFile($project);
@@ -88,7 +88,7 @@ class MainController {
     }
 
     public function runTest() {
-        if(!$this->isValidUser()) return null;
+        if(!$this->isValidUser()) return "loggedOut";
 
         if(function_exists("xdebug_disable")) {
             xdebug_disable();
