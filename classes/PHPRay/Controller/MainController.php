@@ -21,7 +21,7 @@ use PHPRay\Util\Profiler;
 class MainController {
     public function login() {
         if(Auth::auth($_POST['username'], $_POST['password'])) {
-            $_SESSION['user'] = $_POST['username'];
+            $_SESSION['PHPRAY_USER'] = $_POST['username'];
             return true;
         }
 
@@ -31,7 +31,7 @@ class MainController {
     public function getProjects() {
         if(!$this->isValidUser()) return "unauthed";
 
-        $projects = Project::getProjects($_SESSION['user']);
+        $projects = Project::getProjects($_SESSION['PHPRAY_USER']);
 
         $ret = array();
         foreach($projects as $project) {
@@ -149,17 +149,17 @@ class MainController {
     }
 
     private function isValidUser() {
-        if($_SERVER['REMOTE_ADDR'] == "127.0.0.1" && !array_key_exists('user', $_SESSION)) {
+        if($_SERVER['REMOTE_ADDR'] == "127.0.0.1" && !array_key_exists('PHPRAY_USER', $_SESSION)) {
             $users = Auth::getUsers();
-            $_SESSION['user'] = $users[0]["username"];
+            $_SESSION['PHPRAY_USER'] = $users[0]["username"];
         }
 
-        return array_key_exists('user', $_SESSION);
+        return array_key_exists('PHPRAY_USER', $_SESSION);
     }
 
     private function initProject() {
         if(array_key_exists('project', $_REQUEST)) {
-            return Project::initProject($_SESSION['user'], $_REQUEST['project']);
+            return Project::initProject($_SESSION['PHPRAY_USER'], $_REQUEST['project']);
         }
 
         return null;
@@ -167,7 +167,7 @@ class MainController {
 
     private function getProject() {
         if(array_key_exists('project', $_REQUEST)) {
-            return Project::getProject($_SESSION['user'], $_REQUEST['project']);
+            return Project::getProject($_SESSION['PHPRAY_USER'], $_REQUEST['project']);
         }
 
         return null;
