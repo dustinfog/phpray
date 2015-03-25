@@ -210,6 +210,7 @@ class ReflectionUtil {
         $ref = new \ReflectionObject($obj);
         $children = array();
         $properties = $ref->getProperties();
+        $numOfChildren = 0;
         foreach($properties as $property)
         {
             $name = $property->getName();
@@ -224,9 +225,18 @@ class ReflectionUtil {
                 $subWatch["isStatic"] = true;
             }
             $children[$name] = $subWatch;
+
+            $numOfChildren ++;
         }
 
         foreach($obj as $name => $value) {
+            if($numOfChildren >= self::WATCH_MAX_CHILDREN) {
+                $children[] = array(
+                    "type" => "..."
+                );
+                break;
+            }
+
             if(array_key_exists($name, $children)) {
                 continue;
             }
@@ -234,6 +244,9 @@ class ReflectionUtil {
             $subWatch = self::watchInDepth($value, $depth + 1);
             $subWatch["name"] = $name;
             $children[$name] = $subWatch;
+
+            $numOfChildren ++;
+
         }
 
         return array_values($children);
