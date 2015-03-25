@@ -226,8 +226,7 @@ class ReflectionUtil {
             $children[$name] = $subWatch;
         }
 
-        $objVars = get_object_vars($obj);
-        foreach($objVars as $name => $value) {
+        foreach($obj as $name => $value) {
             if(array_key_exists($name, $children)) {
                 continue;
             }
