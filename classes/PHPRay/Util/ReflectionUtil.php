@@ -232,7 +232,7 @@ class ReflectionUtil {
             }
 
             $subWatch = self::watchInDepth($value, $depth + 1);
-            $children["name"] = $name;
+            $subWatch["name"] = $name;
             $children[$name] = $subWatch;
         }
 
