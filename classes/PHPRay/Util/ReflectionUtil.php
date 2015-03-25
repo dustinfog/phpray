@@ -19,6 +19,7 @@ class ReflectionUtil {
     const ACCESSIBLE_PUBLIC = 1;
     const ACCESSIBLE_PROTECTED = 2;
     const ACCESSIBLE_PRIVATE = 3;
+    const ACCESSIBLE_DYNAMIC = 4;
 
     /**
      * @param $file
@@ -207,7 +208,7 @@ class ReflectionUtil {
     }
 
     private static function dumpObjectChildren(& $obj, $depth) {
-        $ref = new \ReflectionObject($obj);
+        $ref = new \ReflectionClass($obj);
         $children = array();
         $properties = $ref->getProperties();
         $numOfChildren = 0;
@@ -243,6 +244,7 @@ class ReflectionUtil {
 
             $subWatch = self::watchInDepth($value, $depth + 1);
             $subWatch["name"] = $name;
+            $subWatch["accessible"] = self::ACCESSIBLE_DYNAMIC;
             $children[$name] = $subWatch;
 
             $numOfChildren ++;
