@@ -81,15 +81,17 @@ class ReflectionUtil {
 
     public static function getMethodInfos(ClassType $class) {
         $methods = $class->getMethods();
+        $className = $class->getName();
 
         $methodInfos = array();
         foreach($methods as $method) {
             $methodInfos[] = array(
-                "name" => self::getMethodSign($method, $class->getName()),
-                "call" => self::getMethodCall($method, $class->getName()),
+                "name" => self::getMethodSign($method, $className),
+                "call" => self::getMethodCall($method, $className),
                 "shortName" => $method->name,
                 "isStatic" => $method->isStatic(),
                 "accessible" => $method->isPublic() ? self::ACCESSIBLE_PUBLIC : ($method->isProtected() ? self::ACCESSIBLE_PROTECTED : self::ACCESSIBLE_PRIVATE),
+                "isInherent" => $method->getDeclaringClass()->getName() != $className,
                 "isConstructor"=> $method->isConstructor(),
                 "hasTestCase" => $method->hasAnnotation("testCase"),
                 "class" => $class->getName(),
