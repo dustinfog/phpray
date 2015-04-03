@@ -20,6 +20,7 @@ class ErrorHandler {
         $this->errors[] = array(
             "type" => get_class($e),
             "message" => $e->getMessage(),
+            "exception" => ReflectionUtil::watch($e),
             "file" => $e->getFile(),
             "line" => $e->getLine(),
             "backtrace" => Functions::simplifyBacktrace($e->getTrace())
