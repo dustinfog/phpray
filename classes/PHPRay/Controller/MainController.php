@@ -18,9 +18,16 @@ use PHPRay\Util\ReflectionUtil;
 use Nette\Reflection\ClassType;
 use PHPRay\Util\Profiler;
 
-class MainController {
-    public function login() {
-        if(Auth::auth($_POST['username'], $_POST['password'])) {
+/**
+ * Class MainController
+ * @package PHPRay\Controller
+ * @author zhandong.pan <zhandong.pan@funplus.cn>
+ */
+class MainController
+{
+    public function login()
+    {
+        if (Auth::auth($_POST['username'], $_POST['password'])) {
             $_SESSION['PHPRAY_USER'] = $_POST['username'];
             return true;
         }
@@ -28,28 +35,36 @@ class MainController {
         return false;
     }
 
-    public function getProjects() {
-        if(!$this->isValidUser()) return "unauthed";
+    /**
+     * @return array|string
+     */
+    public function getProjects()
+    {
+        if (!$this->isValidUser()) {
+            return "unauthed";
+        }
 
         $projects = Project::getProjects($_SESSION['PHPRAY_USER']);
 
         $ret = array();
-        foreach($projects as $project) {
+        foreach ($projects as $project) {
             $ret[] = $project["name"];
         }
 
         return $ret;
     }
 
-    public function getFileTree() {
-        if(!$this->isValidUser()) return "unauthed";
+    public function getFileTree()
+    {
+        if (!$this->isValidUser()) return "unauthed";
 
         $project = $this->getProject();
         return Functions::treeDir($project["src"]);
     }
 
-    public function getClassesAndMethods() {
-        if(!$this->isValidUser()) return "unauthed";
+    public function getClassesAndMethods()
+    {
+        if (!$this->isValidUser()) return "unauthed";
 
         $project = $this->initProject();
         $this->includeProjectFile($project);
@@ -59,8 +74,11 @@ class MainController {
         return ReflectionUtil::fetchClassesAndMethodes($path);
     }
 
-    public function getCode() {
-        if(!$this->isValidUser()) return "unauthed";
+    public function getCode()
+    {
+        if (!$this->isValidUser()) {
+            return "unauthed";
+        }
         $file = $_POST["file"];
         return Functions::sliceCode($file, $_POST["line"], 7);
     }
@@ -69,8 +87,11 @@ class MainController {
      *
      * @return array
      */
-    public function getTestCode() {
-        if(!$this->isValidUser()) return "unauthed";
+    public function getTestCode()
+    {
+        if (!$this->isValidUser()) {
+            return "unauthed";
+        }
 
         $project = $this->initProject();
         $this->includeProjectFile($project);
@@ -87,10 +108,13 @@ class MainController {
         );
     }
 
-    public function runTest() {
-        if(!$this->isValidUser()) return "unauthed";
+    public function runTest()
+    {
+        if (!$this->isValidUser()) {
+            return "unauthed";
+        }
 
-        if(function_exists("xdebug_disable")) {
+        if (function_exists("xdebug_disable")) {
             xdebug_disable();
         }
 
@@ -98,7 +122,7 @@ class MainController {
         Project::interceptLogs($project);
         $this->includeProjectFile($project);
 
-        if(array_key_exists('className', $_POST) && !empty($_POST['className'])) {
+        if (array_key_exists('className', $_POST) && !empty($_POST['className'])) {
             ReflectionUtil::publicityAllMethods($_POST['className']);
         }
 
@@ -122,12 +146,14 @@ class MainController {
 
             $profiler->enable();
 
-            if($classCode) {
+            if ($classCode) {
                 $instance = eval($_POST['classCode']);
             }
 
             $ret = eval($_POST["methodCode"]);
-            if($instance != null);
+            if ($instance != null) {
+
+            }
 
         } catch (\Exception $e) {
             $errorHandler->catchException($e);
@@ -142,14 +168,15 @@ class MainController {
             'return' => ReflectionUtil::watch($ret),
             'output' => $output,
             'errors' => $errorHandler->getErrors(),
-            'elapsed'=> $elapsed,
+            'elapsed' => $elapsed,
             'profileData' => $profileData,
             'logs' => LogInterceptorFactory::getLogInterceptor()->getLogs()
         );
     }
 
-    private function isValidUser() {
-        if($_SERVER['REMOTE_ADDR'] == "127.0.0.1" && !array_key_exists('PHPRAY_USER', $_SESSION)) {
+    private function isValidUser()
+    {
+        if ($_SERVER['REMOTE_ADDR'] == "127.0.0.1" && !array_key_exists('PHPRAY_USER', $_SESSION)) {
             $users = Auth::getUsers();
             $_SESSION['PHPRAY_USER'] = $users[0]["username"];
         }
@@ -157,24 +184,27 @@ class MainController {
         return array_key_exists('PHPRAY_USER', $_SESSION);
     }
 
-    private function initProject() {
-        if(array_key_exists('project', $_REQUEST)) {
+    private function initProject()
+    {
+        if (array_key_exists('project', $_REQUEST)) {
             return Project::initProject($_SESSION['PHPRAY_USER'], $_REQUEST['project']);
         }
 
         return null;
     }
 
-    private function getProject() {
-        if(array_key_exists('project', $_REQUEST)) {
+    private function getProject()
+    {
+        if (array_key_exists('project', $_REQUEST)) {
             return Project::getProject($_SESSION['PHPRAY_USER'], $_REQUEST['project']);
         }
 
         return null;
     }
 
-    private function includeProjectFile($project) {
-        if(!empty($project) && array_key_exists('fileName', $_POST)){
+    private function includeProjectFile($project)
+    {
+        if (!empty($project) && array_key_exists('fileName', $_POST)) {
             Project::includeProjectFile($project, $_POST['fileName']);
         }
     }

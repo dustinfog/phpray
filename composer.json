@@ -1,4 +1,5 @@
 {
+  "name": "phpray",
   "autoload": {
     "psr-4": {
       "PHPRay\\": "classes/PHPRay"
