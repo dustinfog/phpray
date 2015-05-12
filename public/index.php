@@ -6,7 +6,6 @@
  * Time: 下午3:49
  */
 
-
 error_reporting(E_ALL);
 ini_set("display_errors", 1);
 
@@ -17,7 +16,7 @@ include_once("../bootstrap.php");
 $file = $_SERVER['DOCUMENT_ROOT'] . $_SERVER['PHP_SELF'];
 
 if (!\PHPRay\Util\Functions::isSameFile($file, __FILE__)) {
-    include_once($file);
+    include_once $file;
 } else if (array_key_exists("action", $_REQUEST)) {
     \PHPRay\Util\Functions::stripslashesReqeust();
 
@@ -31,11 +30,11 @@ if (!\PHPRay\Util\Functions::isSameFile($file, __FILE__)) {
     $ctrlObj = new $ctrlClass();
 
     $ret = $ctrlObj->$method();
-    if(is_string($ret)) {
+    if (is_string($ret)) {
         echo $ret;
     } else {
         echo json_encode($ret);
     }
-} else{
-    include_once("index.tpl.php");
+} else {
+    include_once "index.tpl.php";
 }
