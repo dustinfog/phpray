@@ -126,6 +126,9 @@ class MainController
             ReflectionUtil::publicityAllMethods($_POST['className']);
         }
 
+        error_reporting(E_ALL);
+        ini_set("display_errors", 1);
+
         $errorHandler = new ErrorHandler();
         $errorHandler->enable();
 
