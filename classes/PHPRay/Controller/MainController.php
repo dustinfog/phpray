@@ -158,7 +158,9 @@ class MainController
             $errorHandler->catchException($e);
         }
 
-        $profileData = $profiler->disable();
+        if ($profileData == null) {
+            $profileData = $profiler->disable();
+        }
         $output = ob_get_clean();
         $elapsed = Functions::getMillisecond() - $start;
         $errorHandler->catchTheLastError();
