@@ -21,8 +21,10 @@ class Profiler {
         $this->project && $this->xhprofLoaded && xhprof_enable(/*XHPROF_FLAGS_NO_BUILTINS | */XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
     }
 
-    public function disable() {
-        $profileData =  ($this->project && $this->xhprofLoaded) ? xhprof_disable() : null;
+    public function disable($profileData = null) {
+        if (!empty($profileData)) {
+            $profileData =  ($this->project && $this->xhprofLoaded) ? xhprof_disable() : null;
+        }
         return $this->simplifyProfileData($profileData);
     }
 
