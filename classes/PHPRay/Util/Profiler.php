@@ -22,7 +22,7 @@ class Profiler {
     }
 
     public function disable($profileData = null) {
-        if (!empty($profileData)) {
+        if (empty($profileData)) {
             $profileData =  ($this->project && $this->xhprofLoaded) ? xhprof_disable() : null;
         }
         return $this->simplifyProfileData($profileData);
