@@ -12,18 +12,31 @@ namespace PHPRay\Util;
 class Profiler {
     private $project;
     private $xhprofLoaded;
+    private $tidewaysLoaded;
     public function __construct($project) {
         $this->project = $project;
         $this->xhprofLoaded = extension_loaded("xhprof");
+        $this->tidewaysLoaded = extension_loaded('tideways');
     }
 
     public function enable() {
-        $this->project && $this->xhprofLoaded && xhprof_enable(/*XHPROF_FLAGS_NO_BUILTINS | */XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
+        $this->project && (
+            ($this->xhprofLoaded && xhprof_enable(/*XHPROF_FLAGS_NO_BUILTINS | */ XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY))
+                || ($this->tidewaysLoaded && tideways_enable(/*XHPROF_FLAGS_NO_BUILTINS | */ TIDEWAYS_FLAGS_CPU | TIDEWAYS_FLAGS_MEMORY))
+        );
     }
 
     public function disable($profileData = null) {
         if (empty($profileData)) {
-            $profileData =  ($this->project && $this->xhprofLoaded) ? xhprof_disable() : null;
+            if (!$this->project) {
+                return null;
+            }
+
+            if ($this->xhprofLoaded) {
+                $profileData = xhprof_disable();
+            } else if($this->tidewaysLoaded) {
+                $profileData = tideways_disable();
+            }
         }
         return $this->simplifyProfileData($profileData);
     }
