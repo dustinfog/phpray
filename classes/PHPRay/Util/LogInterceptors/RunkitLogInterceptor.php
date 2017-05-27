@@ -8,15 +8,18 @@
 
 namespace PHPRay\Util\LogInterceptors;
 
-class RunkitLogInterceptor extends LogIntercepterBase{
+class RunkitLogInterceptor extends LogIntercepterBase
+{
     protected static $instance = null;
     private $callbackMap = array();
 
-    public function isEnabled() {
+    public function isEnabled()
+    {
         return extension_loaded("runkit");
     }
 
-    public function writeLog() {
+    public function writeLog()
+    {
         $args = func_get_args();
 
         $callbackKey = array_shift($args);
@@ -25,7 +28,8 @@ class RunkitLogInterceptor extends LogIntercepterBase{
         $this->callAndSaveLog($this->callbackMap[$callbackKey], $callbackKey, $trace, $args);
     }
 
-    protected function doIntercept($methodName, $interceptCallback, $callbackKey, $className, $isStatic) {
+    protected function doIntercept($methodName, $interceptCallback, $callbackKey, $className, $isStatic)
+    {
         $code = "
         \$interceptor = " . __CLASS__ . "::getInstance();
         \$args = func_get_args();
@@ -36,14 +40,14 @@ class RunkitLogInterceptor extends LogIntercepterBase{
 
         $this->callbackMap[$callbackKey] = $interceptCallback;
 
-        if($className == null) {
+        if ($className == null) {
             runkit_function_redefine($methodName, '', $code);
         } else {
             $tags = RUNKIT_ACC_PUBLIC;
-            if($isStatic) {
+            if ($isStatic) {
                 $tags = $tags | RUNKIT_ACC_STATIC;
             }
-            runkit_method_redefine($className, $methodName, '', $code,  $tags);
+            runkit_method_redefine($className, $methodName, '', $code, $tags);
         }
 
     }

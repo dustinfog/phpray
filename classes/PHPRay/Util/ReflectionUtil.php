@@ -12,7 +12,8 @@ use Nette\Reflection\ClassType;
 use Nette\Reflection\Method;
 
 
-class ReflectionUtil {
+class ReflectionUtil
+{
     const WATCH_MAX_DEPTH = 10;
     const WATCH_MAX_CHILDREN = 100;
 
@@ -25,32 +26,28 @@ class ReflectionUtil {
      * @param $file
      * @return string[]
      */
-    public static function fetchClassesFromFile($file) {
+    public static function fetchClassesFromFile($file)
+    {
         $classes = array();
 
-        $php_code = file_get_contents ( $file );
-        $namespace="";
-        $tokens = token_get_all ( $php_code );
-        $count = count ( $tokens );
+        $php_code = file_get_contents($file);
+        $namespace = "";
+        $tokens = token_get_all($php_code);
+        $count = count($tokens);
 
-        for($i = 0; $i < $count; $i ++)
-        {
-            if ($tokens[$i][0]===T_NAMESPACE)
-            {
-                for ($j=$i+1;$j<$count;++$j)
-                {
-                    if ($tokens[$j][0]===T_STRING)
-                        $namespace.="\\".$tokens[$j][1];
-                    elseif ($tokens[$j]==='{' or $tokens[$j]===';')
+        for ($i = 0; $i < $count; $i++) {
+            if ($tokens[$i][0] === T_NAMESPACE) {
+                for ($j = $i + 1; $j < $count; ++$j) {
+                    if ($tokens[$j][0] === T_STRING)
+                        $namespace .= "\\" . $tokens[$j][1];
+                    elseif ($tokens[$j] === '{' or $tokens[$j] === ';')
                         break;
                 }
             }
-            if ($tokens[$i][0]===T_CLASS)
-            {
-                for ($j=$i+1;$j<$count;++$j)
-                    if ($tokens[$j]==='{')
-                    {
-                        $classes[]=$namespace."\\".$tokens[$i+2][1];
+            if ($tokens[$i][0] === T_CLASS) {
+                for ($j = $i + 1; $j < $count; ++$j)
+                    if ($tokens[$j] === '{') {
+                        $classes[] = $namespace . "\\" . $tokens[$i + 2][1];
                     }
             }
         }
@@ -58,13 +55,14 @@ class ReflectionUtil {
         return array_unique($classes);
     }
 
-    public static function fetchClassesAndMethodes($file) {
+    public static function fetchClassesAndMethodes($file)
+    {
         $classes = self::fetchClassesFromFile($file);
 
         $ret = array();
-        foreach($classes as $class) {
+        foreach ($classes as $class) {
             $classType = new ClassType($class);
-            if($classType->isAbstract()) {
+            if ($classType->isAbstract()) {
                 continue;
             }
 
@@ -79,12 +77,13 @@ class ReflectionUtil {
         return $ret;
     }
 
-    public static function getMethodInfos(ClassType $class) {
+    public static function getMethodInfos(ClassType $class)
+    {
         $methods = $class->getMethods();
         $className = $class->getName();
 
         $methodInfos = array();
-        foreach($methods as $method) {
+        foreach ($methods as $method) {
             $methodInfos[] = array(
                 "name" => self::getMethodSign($method, $className),
                 "call" => self::getMethodCall($method, $className),
@@ -92,59 +91,62 @@ class ReflectionUtil {
                 "isStatic" => $method->isStatic(),
                 "accessible" => $method->isPublic() ? self::ACCESSIBLE_PUBLIC : ($method->isProtected() ? self::ACCESSIBLE_PROTECTED : self::ACCESSIBLE_PRIVATE),
                 "isInherent" => $method->getDeclaringClass()->getName() != $className,
-                "isConstructor"=> $method->isConstructor(),
+                "isConstructor" => $method->isConstructor(),
                 "hasTestCase" => $method->hasAnnotation("testCase"),
                 "class" => $class->getName(),
                 "description" => self::fetchDocComment($method->getDocComment())
             );
         }
 
-        usort($methodInfos, function($info1, $info2)
-        {
+        usort($methodInfos, function ($info1, $info2) {
             return $info1["shortName"] > $info2["shortName"];
         });
 
         return $methodInfos;
     }
 
-    public static function getClassTestCode(ClassType $class) {
+    public static function getClassTestCode(ClassType $class)
+    {
         $className = $class->getName();
 
-        if($class->hasAnnotation("testCase")) {
+        if ($class->hasAnnotation("testCase")) {
             return str_replace("%%", $className, $class->getAnnotation("testCase"));
         } else {
             $method = $class->getConstructor();
-            if($method == null) {
+            if ($method == null) {
                 return "return new " . $className . "();";
-            }
-            else{
-                return self::getParametersInit($method) . "return ". self::getMethodCall($method, $className, true) . ";";
+            } else {
+                return self::getParametersInit($method) . "return " . self::getMethodCall($method, $className, true) . ";";
             }
         }
     }
 
-    public static function getMethodTestCode(Method $method, $className) {
-        if($method->hasAnnotation("testCase")) {
+    public static function getMethodTestCode(Method $method, $className)
+    {
+        if ($method->hasAnnotation("testCase")) {
             $methodCode = str_replace("%%", self::getPrefix($method, $className, "instance") . $method->getName(), $method->getAnnotation("testCase"));
         } else {
-            $methodCode = self::getParametersInit($method) . "return ". self::getMethodCall($method, $className, true, "instance") . ";";
+            $methodCode = self::getParametersInit($method) . "return " . self::getMethodCall($method, $className, true, "instance") . ";";
         }
 
         return $methodCode;
     }
 
-    public static function watch($var) {
+    public static function watch($var)
+    {
         return self::watchInDepth($var, 1);
     }
 
-    public static function publicityAllMethods($className) {
+    public static function publicityAllMethods($className)
+    {
         self::defineMagicCall($className);
         self::defineMagicCallStatic($className);
     }
 
-    private static function defineMagicCall($className) {
+    private static function defineMagicCall($className)
+    {
         $magicCall = "__call";
-        if(method_exists($className, $magicCall)) {
+        if (method_exists($className, $magicCall)) {
             $magicCallBackup = $magicCall . "_" . rand();
             runkit_method_rename($className, $magicCall, $magicCallBackup);
             $elseCall = "\$this->" . $magicCallBackup . "(\$methodName, \$arguments)";
@@ -160,9 +162,10 @@ class ReflectionUtil {
             }");
     }
 
-    private static function defineMagicCallStatic($className) {
+    private static function defineMagicCallStatic($className)
+    {
         $magicCall = "__callStatic";
-        if(method_exists($className, $magicCall)) {
+        if (method_exists($className, $magicCall)) {
             $magicCallBackup = $magicCall . "_" . rand();
             runkit_method_rename($className, $magicCall, $magicCallBackup);
             $elseCall = $className . "::" . $magicCallBackup . "(\$methodName, \$arguments)";
@@ -178,29 +181,30 @@ class ReflectionUtil {
             }", RUNKIT_ACC_PUBLIC | RUNKIT_ACC_STATIC);
     }
 
-    private static function watchInDepth(& $var, $depth) {
+    private static function watchInDepth(& $var, $depth)
+    {
         $dump = array();
-        if(is_object($var)) {
+        if (is_object($var)) {
             $dump["type"] = get_class($var);
-            if($depth < self::WATCH_MAX_DEPTH) {
+            if ($depth < self::WATCH_MAX_DEPTH) {
                 $dump["children"] = self::dumpObjectChildren($var, $depth);
             } else {
                 $dump["value"] = "{...}";
             }
         } else {
             $dump["type"] = gettype($var);
-            if(is_array($var)) {
+            if (is_array($var)) {
                 $dump["size"] = count($var);
-                if($depth < self::WATCH_MAX_DEPTH) {
+                if ($depth < self::WATCH_MAX_DEPTH) {
                     $dump["children"] = self::dumpArrayChildren($var, $depth);
                 } else {
                     $dump["value"] = "[...]";
                 }
             } else {
-                if(is_string($var)) {
+                if (is_string($var)) {
                     $dump["size"] = strlen($var);
                 }
-                if(!is_null($var)) {
+                if (!is_null($var)) {
                     $dump["value"] = var_export($var, true);
                 }
             }
@@ -209,38 +213,40 @@ class ReflectionUtil {
         return $dump;
     }
 
-    private static function dumpObjectChildren(& $obj, $depth) {
+    private static function dumpObjectChildren(& $obj, $depth)
+    {
         $ref = new \ReflectionClass($obj);
         $children = array();
         $properties = $ref->getProperties();
         $numOfChildren = 0;
-        foreach($properties as $property)
-        {
+        foreach ($properties as $property) {
             $name = $property->getName();
-            $accessible = $property->isPublic() ? self::ACCESSIBLE_PUBLIC : ($property->isProtected() ? self::ACCESSIBLE_PROTECTED : self::ACCESSIBLE_PRIVATE);
+            $accessible = $property->isPublic() ? self::ACCESSIBLE_PUBLIC
+                : ($property->isProtected() ? self::ACCESSIBLE_PROTECTED
+                    : self::ACCESSIBLE_PRIVATE);
 
             $property->setAccessible(true);
             $value = $property->getValue($obj);
             $subWatch = self::watchInDepth($value, $depth + 1);
             $subWatch["name"] = $name;
             $subWatch["accessible"] = $accessible;
-            if($property->isStatic()) {
+            if ($property->isStatic()) {
                 $subWatch["isStatic"] = true;
             }
             $children[$name] = $subWatch;
 
-            $numOfChildren ++;
+            $numOfChildren++;
         }
 
-        foreach($obj as $name => $value) {
-            if($numOfChildren >= self::WATCH_MAX_CHILDREN) {
+        foreach ($obj as $name => $value) {
+            if ($numOfChildren >= self::WATCH_MAX_CHILDREN) {
                 $children[] = array(
                     "type" => "..."
                 );
                 break;
             }
 
-            if(array_key_exists($name, $children)) {
+            if (array_key_exists($name, $children)) {
                 continue;
             }
 
@@ -249,24 +255,48 @@ class ReflectionUtil {
             $subWatch["accessible"] = self::ACCESSIBLE_DYNAMIC;
             $children[$name] = $subWatch;
 
-            $numOfChildren ++;
+            $numOfChildren++;
 
+        }
+
+        $docProperties = self::parseDocProperties($ref);
+
+        foreach ($docProperties as $name) {
+            if ($numOfChildren >= self::WATCH_MAX_CHILDREN) {
+                $children[] = array(
+                    "type" => "..."
+                );
+                break;
+            }
+
+            if (array_key_exists($name, $children)) {
+                continue;
+            }
+
+            $value = $obj->$name;
+            $subWatch = self::watchInDepth($value, $depth + 1);
+            $subWatch["name"] = $name;
+            $subWatch["accessible"] = self::ACCESSIBLE_DYNAMIC;
+            $children[$name] = $subWatch;
+
+            $numOfChildren++;
         }
 
         return array_values($children);
     }
 
-    private static function dumpArrayChildren(& $array, $depth) {
+    private static function dumpArrayChildren(& $array, $depth)
+    {
         $children = array();
         $numOfChildren = 0;
-        foreach($array as $key => $value) {
+        foreach ($array as $key => $value) {
             $subWatch = self::watchInDepth($value, $depth + 1);
-            $subWatch["name"] = '['. $key . ']';
+            $subWatch["name"] = '[' . $key . ']';
             $children[] = $subWatch;
 
-            $numOfChildren ++;
+            $numOfChildren++;
 
-            if($numOfChildren >= self::WATCH_MAX_CHILDREN) {
+            if ($numOfChildren >= self::WATCH_MAX_CHILDREN) {
                 $children[] = array(
                     "type" => "..."
                 );
@@ -277,30 +307,32 @@ class ReflectionUtil {
         return $children;
     }
 
-    private static function getPrefix(Method $method, $className, $caller) {
-        if($method->isConstructor()) {
+    private static function getPrefix(Method $method, $className, $caller)
+    {
+        if ($method->isConstructor()) {
             return "";
         }
 
-        if($method->isStatic()) {
+        if ($method->isStatic()) {
             return $className . "::";
         }
 
         $prefix = "";
-        if(!empty($caller)) {
+        if (!empty($caller)) {
             $prefix = "\$" . $caller;
         }
 
-        return $prefix. "->";
+        return $prefix . "->";
     }
 
-    private static function getParametersInit(Method $method) {
+    private static function getParametersInit(Method $method)
+    {
         $code = "";
         $parameters = $method->getParameters();
-        foreach($parameters as $parameter) {
+        foreach ($parameters as $parameter) {
             $code .= "\$" . $parameter->getName() . " = ";
 
-            if($parameter->isDefaultValueAvailable()) {
+            if ($parameter->isDefaultValueAvailable()) {
                 $code .= var_export($parameter->getDefaultValue(), true);
             } else {
                 $code .= "null";
@@ -312,8 +344,9 @@ class ReflectionUtil {
         return $code . PHP_EOL;
     }
 
-    private static function getMethodCall(Method $method, $className, $reserveDefault = false, $caller="") {
-        if($method->isConstructor()) {
+    private static function getMethodCall(Method $method, $className, $reserveDefault = false, $caller = "")
+    {
+        if ($method->isConstructor()) {
             $call = "new " . $className;
         } else {
             $call = self::getPrefix($method, $className, $caller) . $method->getName();
@@ -324,38 +357,40 @@ class ReflectionUtil {
         return $call;
     }
 
-    private static function getMethodSign(Method $method, $className) {
+    private static function getMethodSign(Method $method, $className)
+    {
         $sign = $method->getName()
             . "("
             . self::getFormalParameters($method, true)
             . ") : "
-            . ( $method->isConstructor() ? $className : self::getReturnType($method));
+            . ($method->isConstructor() ? $className : self::getReturnType($method));
 
         return $sign;
     }
 
-    public static function getFormalParameters(Method $method, $typeFromComment = false) {
+    public static function getFormalParameters(Method $method, $typeFromComment = false)
+    {
         $formalParameters = array();
 
         $paramTypes = null;
-        if($typeFromComment) {
+        if ($typeFromComment) {
             $paramTypes = self::getParamTypes($method);
         }
 
-        foreach($method->getParameters() as $parameter) {
+        foreach ($method->getParameters() as $parameter) {
             $type = $parameter->getClassName();
             $paramName = $parameter->getName();
-            if(empty($type) && $typeFromComment && array_key_exists($paramName, $paramTypes)) {
+            if (empty($type) && $typeFromComment && array_key_exists($paramName, $paramTypes)) {
                 $type = $paramTypes[$paramName];
             }
 
-            if(!empty($type)) {
+            if (!empty($type)) {
                 $formalParameter = $type . " ";
             } else {
                 $formalParameter = "";
             }
 
-            if($parameter->isPassedByReference()) {
+            if ($parameter->isPassedByReference()) {
                 $formalParameter .= "&";
             }
 
@@ -363,12 +398,12 @@ class ReflectionUtil {
             if ($parameter->isDefaultValueAvailable()) {
                 $value = $parameter->getDefaultValue();
                 $export = var_export($value, true);
-                if(is_array($value)) {
+                if (is_array($value)) {
                     $export = preg_replace("/$|\\s+/", " ", $export);
                     $export = str_replace("\n", "", $export);
                 }
 
-                $formalParameter.= " = " . str_replace("\n", "", $export);
+                $formalParameter .= " = " . str_replace("\n", "", $export);
             }
 
             $formalParameters[] = $formalParameter;
@@ -377,11 +412,12 @@ class ReflectionUtil {
         return implode(", ", $formalParameters);
     }
 
-    public static function getActualParameters(Method $method, $reserveDefault = true) {
+    public static function getActualParameters(Method $method, $reserveDefault = true)
+    {
         $actualParameters = array();
 
-        foreach($method->getParameters() as $parameter) {
-            if(!$parameter->isDefaultValueAvailable() || $reserveDefault) {
+        foreach ($method->getParameters() as $parameter) {
+            if (!$parameter->isDefaultValueAvailable() || $reserveDefault) {
                 $actualParameters[] = "\$" . $parameter->getName();
             }
         }
@@ -389,14 +425,15 @@ class ReflectionUtil {
         return implode(", ", $actualParameters);
     }
 
-    private static function getParamTypes(Method $method) {
+    private static function getParamTypes(Method $method)
+    {
         $paramTypes = array();
         $annotations = $method->getAnnotations();
-        if(array_key_exists("param", $annotations)) {
+        if (array_key_exists("param", $annotations)) {
             $params = $annotations["param"];
-            foreach($params as $param) {
+            foreach ($params as $param) {
                 $matches = array();
-                if(preg_match("/([^\\s]*)\\s*\\\$([^\\s]+)/", $param, $matches)) {
+                if (preg_match("/([^\\s]*)\\s*\\\$([^\\s]+)/", $param, $matches)) {
                     $type = $matches[1];
                     $paramName = $matches[2];
 
@@ -408,13 +445,14 @@ class ReflectionUtil {
         return $paramTypes;
     }
 
-    private static function getReturnType(Method $method) {
+    private static function getReturnType(Method $method)
+    {
         $annotations = $method->getAnnotations();
 
-        if(array_key_exists("return", $annotations)) {
+        if (array_key_exists("return", $annotations)) {
             $params = $annotations["return"];
             $matches = array();
-            if(preg_match("/^[^\\s]+/", $params[0], $matches)) {
+            if (preg_match("/^[^\\s]+/", $params[0], $matches)) {
                 return $matches[0];
             }
         }
@@ -425,5 +463,34 @@ class ReflectionUtil {
     private static function fetchDocComment($comment)
     {
         return preg_replace('#^\s*\*\s?#ms', '', trim($comment, '/*'));
+    }
+
+    private static $classPropertiesMap = array();
+    private static function parseDocProperties(\ReflectionClass $class)
+    {
+        $className = $class->getName();
+        if (isset(self::$classPropertiesMap[$className])) {
+            return self::$classPropertiesMap[$className];
+        }
+        $parent = $class->getParentClass();
+        if ($parent) {
+            $properties = self::parseDocProperties($parent);
+        } else {
+            $properties = array();
+        }
+        $comments = $class->getDocComment();
+        $lines = explode(PHP_EOL, $comments);
+        foreach ($lines as $line) {
+            if (preg_match(
+                '/\*\s*@property-?([^\s]*)\s+([^\s]*)\s*\$([^\s]*)\s*(.*)/',
+                $line,
+                $matches
+            )) {
+                $name = $matches[3];
+                $properties[$name] = $name;
+            }
+        }
+        self::$classPropertiesMap[$className] = $properties;
+        return $properties;
     }
 }

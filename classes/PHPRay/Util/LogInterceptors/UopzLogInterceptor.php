@@ -8,19 +8,23 @@
 
 namespace PHPRay\Util\LogInterceptors;
 
-class UopzLogInterceptor extends LogIntercepterBase{
+class UopzLogInterceptor extends LogIntercepterBase
+{
     protected static $instance = null;
-    public function isEnabled() {
+
+    public function isEnabled()
+    {
         return extension_loaded("uopz");
     }
 
-    protected function doIntercept($methodName, $interceptCallback, $callbackKey, $className, $isStatic) {
+    protected function doIntercept($methodName, $interceptCallback, $callbackKey, $className, $isStatic)
+    {
         $interceptor = $this;
-        $newImplements = function() use ($interceptor, $interceptCallback, $callbackKey){
+        $newImplements = function () use ($interceptor, $interceptCallback, $callbackKey) {
             $interceptor->callAndSaveLog($interceptCallback, $callbackKey, debug_backtrace(), func_get_args());
         };
 
-        if($className == null) {
+        if ($className == null) {
             uopz_redefine($methodName, $newImplements);
         } else {
             uopz_redefine($className, $methodName, $newImplements);

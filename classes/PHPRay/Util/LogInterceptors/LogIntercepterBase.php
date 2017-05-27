@@ -12,14 +12,16 @@ use PHPRay\Util\Functions;
 use PHPRay\Util\LogInterceptor;
 use PHPRay\Util\ReflectionUtil;
 
-abstract class LogIntercepterBase implements  LogInterceptor {
+abstract class LogIntercepterBase implements LogInterceptor
+{
     protected static $instance = null;
 
     /**
      * @return static
      */
-    public static function getInstance() {
-        if(static::$instance == null) {
+    public static function getInstance()
+    {
+        if (static::$instance == null) {
             static::$instance = new static();
         }
 
@@ -28,26 +30,28 @@ abstract class LogIntercepterBase implements  LogInterceptor {
 
     private $logs = array();
 
-    public function getLogs() {
+    public function getLogs()
+    {
         return $this->logs;
     }
 
-    public function intercept($methodName, $interceptCallback, $className = null) {
-        if(!$this->isEnabled()) return;
+    public function intercept($methodName, $interceptCallback, $className = null)
+    {
+        if (!$this->isEnabled()) return;
 
         $isStatic = false;
-        if($className == null) {
-            if(!function_exists($methodName)) {
+        if ($className == null) {
+            if (!function_exists($methodName)) {
                 throw new \BadFunctionCallException("the intercepted function " . $methodName . " does not exists");
             };
 
             $callbackKey = $methodName;
-        } else if(class_exists($className)){
+        } else if (class_exists($className)) {
             $callbackKey = $className . "::" . $methodName;
 
             try {
                 $method = new \ReflectionMethod($className, $methodName);
-            } catch(\ReflectionException $e) {
+            } catch (\ReflectionException $e) {
                 throw new \BadMethodCallException("the intercepted method " . $callbackKey . " does not exists");
             }
 
@@ -59,10 +63,11 @@ abstract class LogIntercepterBase implements  LogInterceptor {
         $this->doIntercept($methodName, $interceptCallback, $callbackKey, $className, $isStatic);
     }
 
-    protected function callAndSaveLog($interceptCallback, $callbackKey, $trace, $args) {
+    protected function callAndSaveLog($interceptCallback, $callbackKey, $trace, $args)
+    {
         $message = call_user_func_array($interceptCallback, $args);
 
-        if(!is_string($message)) {
+        if (!is_string($message)) {
             $message = ReflectionUtil::watch($message);
         }
 

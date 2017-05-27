@@ -5,40 +5,45 @@
  * Date: 15/2/17
  * Time: 下午4:11
  */
+
 namespace PHPRay\Util;
 
 use Nette\Reflection\Method;
 
-class Functions {
+class Functions
+{
     /**
      * @return int
      * @testCase ('return %%();')
      */
-    public static function getMillisecond() {
+    public static function getMillisecond()
+    {
         list($s1, $s2) = explode(' ', microtime());
         return ($s1 + $s2) * 1000;
     }
 
-    public static function treeDir($dirName) {
+    public static function treeDir($dirName)
+    {
         $tree = array();
         self::treeFile($dirName, "", $tree);
         return $tree;
     }
 
-    private static function treeFile($dirName, $relativeName, &$tree) {
-        foreach(scandir($dirName) as $fileName) {
-            if(strpos($fileName, ".") === 0)
+    private static function treeFile($dirName, $relativeName, &$tree)
+    {
+        foreach (scandir($dirName) as $fileName) {
+            if (strpos($fileName, ".") === 0)
                 continue;
 
             $path = $dirName . DIRECTORY_SEPARATOR . $fileName;
-            if($relativeName == "") {
+            if ($relativeName == "") {
                 $relativePath = $fileName;
             } else {
                 $relativePath = $relativeName . DIRECTORY_SEPARATOR . $fileName;
             }
 
             $entry = null;
-            if(is_dir($path)) {
+            if (is_dir($path)) {
                 $entry = array(
                     "name" => $relativePath,
                     "isBranch" => true,
@@ -48,7 +53,7 @@ class Functions {
                 self::treeFile($path, $relativePath, $entry["children"]);
 
                 $tree[] = $entry;
-            } else if(!is_link($path) && strpos($path, ".php") == strlen($path) - 4) {
+            } else if (!is_link($path) && strpos($path, ".php") == strlen($path) - 4) {
                 $tree[] = array(
                     "name" => $relativePath,
                     "isBranch" => false
@@ -57,20 +62,20 @@ class Functions {
         }
     }
 
-    public static function getTopNamespace() {
+    public static function getTopNamespace()
+    {
         $pos = strpos(__NAMESPACE__, "\\");
         return substr(__NAMESPACE__, 0, $pos);
     }
 
-    public static function simplifyBacktrace($trace) {
-        $trace = array_filter($trace, function($item)
-        {
+    public static function simplifyBacktrace($trace)
+    {
+        $trace = array_filter($trace, function ($item) {
             $topNameSpace = Functions::getTopNamespace();
             return array_key_exists("file", $item) && strpos($item["file"], $topNameSpace) === false && (!array_key_exists("class", $item) || strpos($item["class"], $topNameSpace) === false);
         });
 
-        return array_map(function($item)
-        {
+        return array_map(function ($item) {
             $function = $item['function'];
             if (array_key_exists("class", $item)) {
                 $function = $item["class"] . $item["type"] . $function;
@@ -84,15 +89,17 @@ class Functions {
         }, array_values($trace));
     }
 
-    public static function isSameFile($file1, $file2) {
+    public static function isSameFile($file1, $file2)
+    {
         $stat1 = stat($file1);
         $stat2 = stat($file2);
 
         return $stat1[0] == $stat2[0] && $stat1[1] == $stat2[1];
     }
 
-    public static function sliceCode($file, $focusLine, $diff) {
-        if(!file_exists($file)) {
+    public static function sliceCode($file, $focusLine, $diff)
+    {
+        if (!file_exists($file)) {
             return "";
         }
 
@@ -107,29 +114,29 @@ class Functions {
 
         $focusStartPos = 0;
         $focusEndPos = -1;
-        while(true) {
+        while (true) {
             $pos = strpos($code, "<br />", $offset);
 
-            if($pos === false) {
+            if ($pos === false) {
                 break;
             }
 
-            $line ++;
+            $line++;
             $offset = $pos + 6;
-            if($line == $from) {
+            if ($line == $from) {
                 $focusStartPos = $pos;
-            } else if($line == $to + 1) {
+            } else if ($line == $to + 1) {
                 $focusEndPos = $pos;
             }
         }
 
-        if($focusEndPos == -1) {
+        if ($focusEndPos == -1) {
             $focusEndPos = strlen($code);
         }
 
         $subCode = substr($code, $focusStartPos, $focusEndPos - $focusStartPos);
         $firstSpanPos = strpos($subCode, "span");
-        if($subCode[$firstSpanPos - 1] == '/') {
+        if ($subCode[$firstSpanPos - 1] == '/') {
             $preCode = substr($code, 0, $focusStartPos);
             $preSpanPos = strrpos($preCode, 'span');
             $subCode = substr($preCode, $preSpanPos - 1, 29) . $subCode;
@@ -139,12 +146,12 @@ class Functions {
         $subCode = str_replace("</span>", "</font>", $subCode);
         $subCode = str_replace("\r", "", $subCode);
 
-        if($focusStartPos != 0) {
+        if ($focusStartPos != 0) {
             $subCode = "..." . $subCode;
-            $from --;
+            $from--;
         }
 
-        if($focusEndPos != strlen($code)) {
+        if ($focusEndPos != strlen($code)) {
             $subCode .= "<br />...";
         }
 
@@ -154,7 +161,8 @@ class Functions {
         );
     }
 
-    public static function dirContains($dir, $file) {
+    public static function dirContains($dir, $file)
+    {
         return strpos(realpath($file), realpath($dir) . DIRECTORY_SEPARATOR) !== false;
     }
 
@@ -167,8 +175,9 @@ class Functions {
         return $value;
     }
 
-    public static function stripslashesReqeust() {
-        if((function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()) || (ini_get('magic_quotes_sybase') && (strtolower(ini_get('magic_quotes_sybase'))!="off")) ){
+    public static function stripslashesReqeust()
+    {
+        if ((function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()) || (ini_get('magic_quotes_sybase') && (strtolower(ini_get('magic_quotes_sybase')) != "off"))) {
             $_GET = self::stripslashesDeep($_GET);
             $_POST = self::stripslashesDeep($_POST);
             $_COOKIE = self::stripslashesDeep($_COOKIE);

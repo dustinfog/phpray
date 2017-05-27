@@ -12,11 +12,13 @@ namespace PHPRay\Util;
 use PHPRay\Util\LogInterceptors\RunkitLogInterceptor;
 use PHPRay\Util\LogInterceptors\UopzLogInterceptor;
 
-class LogInterceptorFactory {
+class LogInterceptorFactory
+{
     /**
      * @return LogInterceptor
      */
-    public static function getLogInterceptor() {
+    public static function getLogInterceptor()
+    {
         $uopzInstance = UopzLogInterceptor::getInstance();
         return $uopzInstance->isEnabled() ? $uopzInstance : RunkitLogInterceptor::getInstance();
     }

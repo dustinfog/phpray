@@ -9,14 +9,17 @@
 namespace PHPRay\Util;
 
 
-class ErrorHandler {
+class ErrorHandler
+{
     private $errors = array();
 
-    public function enable() {
+    public function enable()
+    {
         set_error_handler(array($this, "errorHandler"));
     }
 
-    public function catchException(\Exception $e) {
+    public function catchException(\Exception $e)
+    {
         $this->errors[] = array(
             "type" => get_class($e),
             "message" => $e->getMessage(),
@@ -27,11 +30,13 @@ class ErrorHandler {
         );
     }
 
-    public function getErrors() {
+    public function getErrors()
+    {
         return $this->errors;
     }
 
-    public function errorHandler($type, $msg, $file, $line) {
+    public function errorHandler($type, $msg, $file, $line)
+    {
         $this->errors[] = array(
             "type" => $type,
             "message" => $msg,
@@ -43,9 +48,10 @@ class ErrorHandler {
         return true;
     }
 
-    public function catchTheLastError() {
+    public function catchTheLastError()
+    {
         $error = error_get_last();
-        if(self::isFatalError($error['type'])) {
+        if (self::isFatalError($error['type'])) {
             $error["backtrace"] = array();
             $this->errors[] = $error;
         }
@@ -54,11 +60,11 @@ class ErrorHandler {
     private static function isFatalError($type)
     {
         return $type == E_ERROR
-        || $type == E_PARSE
-        || $type == E_USER_ERROR
-        || $type == E_CORE_ERROR
-        || $type == E_CORE_WARNING
-        || $type == E_COMPILE_ERROR
-        || $type == E_COMPILE_WARNING;
+            || $type == E_PARSE
+            || $type == E_USER_ERROR
+            || $type == E_CORE_ERROR
+            || $type == E_CORE_WARNING
+            || $type == E_COMPILE_ERROR
+            || $type == E_COMPILE_WARNING;
     }
 }

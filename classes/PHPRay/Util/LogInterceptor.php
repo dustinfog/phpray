@@ -9,6 +9,7 @@
 namespace PHPRay\Util;
 
 
-interface LogInterceptor {
+interface LogInterceptor
+{
     public function intercept($methodName, $interceptCallback, $className = null);
 }
