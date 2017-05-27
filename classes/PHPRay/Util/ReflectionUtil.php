@@ -145,6 +145,10 @@ class ReflectionUtil
 
     private static function defineMagicCall($className)
     {
+        if (!extension_loaded("runkit")) {
+            return;
+        }
+
         $magicCall = "__call";
         if (method_exists($className, $magicCall)) {
             $magicCallBackup = $magicCall . "_" . rand();
@@ -164,6 +168,10 @@ class ReflectionUtil
 
     private static function defineMagicCallStatic($className)
     {
+        if (!extension_loaded("runkit")) {
+            return;
+        }
+
         $magicCall = "__callStatic";
         if (method_exists($className, $magicCall)) {
             $magicCallBackup = $magicCall . "_" . rand();
