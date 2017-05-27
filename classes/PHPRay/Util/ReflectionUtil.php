@@ -273,7 +273,12 @@ class ReflectionUtil
                 continue;
             }
 
-            $value = $obj->$name;
+            try {
+                $value = $obj->$name;
+            } catch (\Exception $e) {
+                continue;
+            }
+
             $subWatch = self::watchInDepth($value, $depth + 1);
             $subWatch["name"] = $name;
             $subWatch["accessible"] = self::ACCESSIBLE_DYNAMIC;
