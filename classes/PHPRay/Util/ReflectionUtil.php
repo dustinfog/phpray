@@ -495,7 +495,7 @@ class ReflectionUtil
         $lines = explode(PHP_EOL, $comments);
         foreach ($lines as $line) {
             if (preg_match(
-                '/\*\s*@property-?([^\s]*)\s+([^\s]*)\s*\$([^\s]*)\s*(.*)/',
+                '/\*\s*@property-?([^\s]*)\s+([^\s]*)\s*\$?([^\s]*)\s*(.*)/',
                 $line,
                 $matches
             )) {
