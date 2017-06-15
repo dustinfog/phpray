@@ -462,7 +462,6 @@ class ReflectionUtil
 
     private static function getReturnType(Method $method)
     {
-        $type = "mixed";
         if (method_exists($method, 'getReturnType')) {
             $type = $method->getReturnType();
         }
@@ -479,7 +478,10 @@ class ReflectionUtil
             }
         }
 
-        return $type;
+        if (!empty($type)) {
+            return $type;
+        }
+        return 'mixed';
     }
 
     private static function fetchDocComment($comment)
