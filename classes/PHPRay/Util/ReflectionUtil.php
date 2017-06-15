@@ -391,7 +391,9 @@ class ReflectionUtil
         }
 
         foreach ($method->getParameters() as $parameter) {
-            $type = $parameter->getClassName();
+            if (!method_exists($parameter, "getType") || !($type = $parameter->getType())) {
+                $type = $parameter->getClassName();
+            }
             $paramName = $parameter->getName();
             if (empty($type) && $typeFromComment && array_key_exists($paramName, $paramTypes)) {
                 $type = $paramTypes[$paramName];
@@ -460,17 +462,24 @@ class ReflectionUtil
 
     private static function getReturnType(Method $method)
     {
-        $annotations = $method->getAnnotations();
+        $type = "mixed";
+        if (method_exists($method, 'getReturnType')) {
+            $type = $method->getReturnType();
+        }
 
-        if (array_key_exists("return", $annotations)) {
-            $params = $annotations["return"];
-            $matches = array();
-            if (preg_match("/^[^\\s]+/", $params[0], $matches)) {
-                return $matches[0];
+        if (empty($type)) {
+            $annotations = $method->getAnnotations();
+
+            if (array_key_exists("return", $annotations)) {
+                $params = $annotations["return"];
+                $matches = array();
+                if (preg_match("/^[^\\s]+/", $params[0], $matches)) {
+                    $type = $matches[0];
+                }
             }
         }
 
-        return "mixed";
+        return $type;
     }
 
     private static function fetchDocComment($comment)
