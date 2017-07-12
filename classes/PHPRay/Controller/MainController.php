@@ -25,26 +25,16 @@ use PHPRay\Util\Profiler;
  */
 class MainController
 {
-    public function login()
-    {
-        if (Auth::auth($_POST['username'], $_POST['password'])) {
-            $_SESSION['PHPRAY_USER'] = $_POST['username'];
-            return true;
-        }
-
-        return false;
-    }
-
     /**
      * @return array|string
      */
     public function getProjects()
     {
-        if (!$this->isValidUser()) {
+        if (!Auth::isValidUser()) {
             return "unauthed";
         }
 
-        $projects = Project::getProjects($_SESSION['PHPRAY_USER']);
+        $projects = Project::getProjects(Auth::getUser());
 
         $ret = array();
         foreach ($projects as $project) {
@@ -56,7 +46,7 @@ class MainController
 
     public function getFileTree()
     {
-        if (!$this->isValidUser()) return "unauthed";
+        if (!Auth::isValidUser()) return "unauthed";
 
         $project = $this->getProject();
         return Functions::treeDir($project["src"]);
@@ -64,7 +54,7 @@ class MainController
 
     public function getClassesAndMethods()
     {
-        if (!$this->isValidUser()) return "unauthed";
+        if (!Auth::isValidUser()) return "unauthed";
 
         $project = $this->initProject();
         $this->includeProjectFile($project);
@@ -76,7 +66,7 @@ class MainController
 
     public function getCode()
     {
-        if (!$this->isValidUser()) {
+        if (!Auth::isValidUser()) {
             return "unauthed";
         }
         $file = $_POST["file"];
@@ -89,7 +79,7 @@ class MainController
      */
     public function getTestCode()
     {
-        if (!$this->isValidUser()) {
+        if (!Auth::isValidUser()) {
             return "unauthed";
         }
 
@@ -110,7 +100,7 @@ class MainController
 
     public function runTest()
     {
-        if (!$this->isValidUser()) {
+        if (!Auth::isValidUser()) {
             return "unauthed";
         }
 
@@ -172,21 +162,11 @@ class MainController
             'logs' => LogInterceptorFactory::getLogInterceptor()->getLogs()
         );
     }
-
-    private function isValidUser()
-    {
-        if ($_SERVER['REMOTE_ADDR'] == "127.0.0.1" && !array_key_exists('PHPRAY_USER', $_SESSION)) {
-            $users = Auth::getUsers();
-            $_SESSION['PHPRAY_USER'] = $users[0]["username"];
-        }
-
-        return array_key_exists('PHPRAY_USER', $_SESSION);
-    }
-
+    
     private function initProject()
     {
         if (array_key_exists('project', $_REQUEST)) {
-            return Project::initProject($_SESSION['PHPRAY_USER'], $_REQUEST['project']);
+            return Project::initProject(Auth::getUser(), $_REQUEST['project']);
         }
 
         return null;
@@ -195,7 +175,7 @@ class MainController
     private function getProject()
     {
         if (array_key_exists('project', $_REQUEST)) {
-            return Project::getProject($_SESSION['PHPRAY_USER'], $_REQUEST['project']);
+            return Project::getProject(Auth::getUser(), $_REQUEST['project']);
         }
 
         return null;

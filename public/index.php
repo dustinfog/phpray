@@ -6,6 +6,8 @@
  * Time: 下午3:49
  */
 
+use PHPRay\Util\Auth;
+
 session_start();
 
 include_once("../bootstrap.php");
@@ -33,5 +35,7 @@ if (!\PHPRay\Util\Functions::isSameFile($file, __FILE__)) {
         echo json_encode($ret);
     }
 } else {
-    include_once "index.tpl.php";
+    if (Auth::isValidUser()) {
+        include_once "index.tpl.php";
+    }
 }

@@ -64,4 +64,28 @@ class Auth
             : (isset($_SERVER["HTTP_CLIENT_IP"]) ? $_SERVER["HTTP_CLIENT_IP"]
                 : $_SERVER["REMOTE_ADDR"]);
     }
+
+    public static function getUser() {
+        if (isset($_SESSION['PHP_AUTH_USER'])) {
+            return $_SESSION['PHP_AUTH_USER'];
+        }
+        return $_SERVER['PHP_AUTH_USER'];
+    }
+
+    public static function isValidUser()
+    {
+        if ($_SERVER['REMOTE_ADDR'] == "127.0.0.1") {
+            $users = Auth::getUsers();
+            $_SESSION['PHP_AUTH_USER'] = $users[0]["username"];
+            return true;
+        }
+
+        if (isset($_SERVER['PHP_AUTH_USER']) && self::auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])) {
+            return true;
+        }
+
+        header('WWW-Authenticate: Basic realm="My Realm"');
+        header('HTTP/1.0 401 Unauthorized');
+        return false;
+    }
 }
