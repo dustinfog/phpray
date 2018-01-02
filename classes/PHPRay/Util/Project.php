@@ -63,6 +63,14 @@ class Project
         }
     }
 
+    public static function shutdownProject($project, $exception) {
+        if (empty($project) || !array_key_exists("shutdown", $project) || !is_callable($project['shutdown'])) {
+            return;
+        }
+
+        call_user_func($project["shutdown"], $exception);
+    }
+
     public static function includeProjectFile($project, $fileName)
     {
         $file = $project["src"] . DIRECTORY_SEPARATOR . $fileName;

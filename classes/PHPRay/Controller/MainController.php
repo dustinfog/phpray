@@ -128,6 +128,7 @@ class MainController
         $profileData = null;
         $profiler = new Profiler($project);
         $start = Functions::getMillisecond();
+        $exception = null;
         try {
             $instance = null;
 
@@ -140,13 +141,12 @@ class MainController
             }
 
             $ret = eval($_POST["methodCode"]);
-            if ($instance != null) {
-
-            }
-
         } catch (\Exception $e) {
             $errorHandler->catchException($e);
+            $exception = $e;
         }
+
+        Project::shutdownProject($project, $exception);
 
         $profileData = $profiler->disable($profileData);
         $output = ob_get_clean();
