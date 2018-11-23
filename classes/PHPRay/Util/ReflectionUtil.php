@@ -342,7 +342,17 @@ class ReflectionUtil
     {
         $code = "";
         $parameters = $method->getParameters();
+        $comment = $method->getDocComment();
+
         foreach ($parameters as $parameter) {
+            $pComment = '';
+            if (preg_match(sprintf('/\s*\*\s*@param\s+([^\$]+\$%s|\$%s[\s]+[^\s]+)(.*)/', $parameter->getName(), $parameter->getName()), $comment, $matches)) {
+                $pComment = trim($matches[2]);
+            }
+
+            if ($pComment) {
+                $code .= "// $pComment" . PHP_EOL;
+            }
             $code .= "\$" . $parameter->getName() . " = ";
 
             if ($parameter->isDefaultValueAvailable()) {
@@ -351,7 +361,9 @@ class ReflectionUtil
                 $code .= "null";
             }
 
-            $code .= ";" . PHP_EOL;
+            $code .= ";";
+
+            $code .= PHP_EOL;
         }
 
         return $code . PHP_EOL;
