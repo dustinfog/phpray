@@ -346,7 +346,7 @@ class ReflectionUtil
 
         foreach ($parameters as $parameter) {
             $pComment = '';
-            if (preg_match(sprintf('/\s*\*\s*@param\s+([^\$]+\$%s|\$%s[\s]+[^\s]+)(.*)/', $parameter->getName(), $parameter->getName()), $comment, $matches)) {
+            if (preg_match(sprintf('/\s*\*\s*@param\s+([^\$]*\$%s|\$%s[\s]+[^\s]+)(.*)/', $parameter->getName(), $parameter->getName()), $comment, $matches)) {
                 $pComment = trim($matches[2]);
             }
 
