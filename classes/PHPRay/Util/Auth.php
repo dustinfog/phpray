@@ -73,11 +73,11 @@ class Auth
 
     public static function isValidUser()
     {
-//        if ($_SERVER['REMOTE_ADDR'] == "127.0.0.1") {
-//            $users = Auth::getUsers();
-//            $_SESSION['PHP_AUTH_USER'] = $users[0]["username"];
-//            return true;
-//        }
+        if ($_SERVER['REMOTE_ADDR'] == "127.0.0.1") {
+            $users = Auth::getUsers();
+            $_SESSION['PHP_AUTH_USER'] = $users[0]["username"];
+            return true;
+        }
 
         if (isset($_SESSION['PHP_AUTH_USER'])) {
             return true;

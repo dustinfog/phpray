@@ -8,8 +8,6 @@
 
 namespace PHPRay\Util;
 
-use Nette\Reflection\Method;
-
 class Functions
 {
     /**
@@ -20,46 +18,6 @@ class Functions
     {
         list($s1, $s2) = explode(' ', microtime());
         return ($s1 + $s2) * 1000;
-    }
-
-    public static function treeDir($dirName)
-    {
-        $tree = array();
-        self::treeFile($dirName, "", $tree);
-        return $tree;
-    }
-
-    private static function treeFile($dirName, $relativeName, &$tree)
-    {
-        foreach (scandir($dirName) as $fileName) {
-            if (strpos($fileName, ".") === 0)
-                continue;
-
-            $path = $dirName . DIRECTORY_SEPARATOR . $fileName;
-            if ($relativeName == "") {
-                $relativePath = $fileName;
-            } else {
-                $relativePath = $relativeName . DIRECTORY_SEPARATOR . $fileName;
-            }
-
-            $entry = null;
-            if (is_dir($path)) {
-                $entry = array(
-                    "name" => $relativePath,
-                    "isBranch" => true,
-                    "children" => array()
-                );
-
-                self::treeFile($path, $relativePath, $entry["children"]);
-
-                $tree[] = $entry;
-            } else if (!is_link($path) && strpos($path, ".php") == strlen($path) - 4) {
-                $tree[] = array(
-                    "name" => $relativePath,
-                    "isBranch" => false
-                );
-            }
-        }
     }
 
     public static function getTopNamespace()

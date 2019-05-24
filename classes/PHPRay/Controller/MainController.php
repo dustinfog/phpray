@@ -49,7 +49,7 @@ class MainController
         if (!Auth::isValidUser()) return "unauthed";
 
         $project = $this->getProject();
-        return Functions::treeDir($project["src"]);
+        return Project::treeDir($project);
     }
 
     public function getClassesAndMethods()
@@ -59,9 +59,136 @@ class MainController
         $project = $this->initProject();
         $this->includeProjectFile($project);
 
-        $path = $project["src"] . DIRECTORY_SEPARATOR . $_POST['fileName'];
-
+        $path = Project::getProjectFile($project, $_POST['fileName']);
         return ReflectionUtil::fetchClassesAndMethodes($path);
+    }
+
+    public function fileGetContent()
+    {
+        if (!Auth::isValidUser()) return "unauthed";
+
+        $project = $this->initProject();
+
+        $debug = false;
+        if ($_POST['fileName'][0] == DIRECTORY_SEPARATOR) {
+            $path = $_POST['fileName'];
+            $src = $project["src"] . DIRECTORY_SEPARATOR;
+            $lenSrc = strlen($src);
+
+            if (isset($project['debugDir'])) {
+                $debugDir = $project['debugDir'] . DIRECTORY_SEPARATOR;
+                $lenDebugDir = strlen($src);
+            }
+
+            if (strncmp($path, $src, $lenSrc) == 0) {
+                $fileName = substr($path, $lenSrc);
+                $readonly = false;
+            } elseif(isset($debugDir) && isset($lenDebugDir) && strncmp($path, $debugDir, $lenDebugDir) == 0) {
+                $fileName = substr($path, $lenDebugDir);
+                $readonly = false;
+                $debug = true;
+            } else {
+                $fileName = $path;
+                $readonly = true;
+            }
+        } else {
+            $fileName = $_POST['fileName'];
+            $path = Project::getProjectFile($project, $fileName, $debug);
+            $readonly = false;
+        }
+
+        if (!file_exists($path)) {
+            return [
+                'error' => 'file not exists',
+            ];
+        }
+
+        if (!isset($project['debugDir'])) {
+            $readonly = true;
+        }
+
+        return [
+            'readonly' => $readonly,
+            'fileName' => $fileName,
+            'debug' => $debug,
+            'content' => file_get_contents($path),
+        ];
+    }
+
+    public function filePutContent() {
+        if (!Auth::isValidUser()) return "unauthed";
+
+        $project = $this->initProject();
+
+        $debugDir = $project['debugDir'] ?? null;
+        if (!$debugDir) {
+            return [
+                'error' => 'config debugDir is required'
+            ];
+        }
+
+        $fileName = $_POST['fileName'];
+
+        if ($fileName[0] == DIRECTORY_SEPARATOR) {
+            return [
+                'error' => 'cannot edit this file',
+            ];
+        }
+
+        $path = Project::getProjectFile($project, $fileName, $debug);
+        if (!$path) {
+            return [
+                'error' => 'file not exists',
+            ];
+        }
+
+        if (!$debug) {
+            $path = $debugDir . DIRECTORY_SEPARATOR . $fileName;
+        }
+
+        $dirname = dirname($path);
+        if (!is_dir($dirname) && !mkdir($dirname, 0777, true)) {
+            return [
+                'error' => 'permission denied',
+            ];
+        }
+
+        file_put_contents($path, $_POST['content']);
+        return [
+            'ok' => true
+        ];
+    }
+
+    public function reverse()
+    {
+        if (!Auth::isValidUser()) return "unauthed";
+
+        $project = $this->initProject();
+
+        $debugDir = $project['debugDir'] ?? null;
+        if (!$debugDir) {
+            return [
+                'error' => 'config debugDir is required'
+            ];
+        }
+
+        $fileName = $_POST['fileName'];
+
+        if ($fileName[0] == DIRECTORY_SEPARATOR) {
+            return [
+                'error' => 'cannot reverse this file',
+            ];
+        }
+
+        $path = $debugDir . DIRECTORY_SEPARATOR . $fileName;
+
+        if (file_exists($path)) {
+            unlink($path);
+        }
+
+        return [
+            'ok' => true
+        ];
     }
 
     public function getCode()
@@ -184,7 +311,11 @@ class MainController
     private function includeProjectFile($project)
     {
         if (!empty($project) && array_key_exists('fileName', $_POST)) {
-            Project::includeProjectFile($project, $_POST['fileName']);
+            $file = Project::getProjectFile($project, $_POST['fileName']);
+            if ($file) {
+                include_once $file;
+            }
         }
     }
+
 }
