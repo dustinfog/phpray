@@ -254,7 +254,7 @@
             }
 
             function edit(p, f, line) {
-                nanoajax.ajax({url: '/', method: 'POST', body: encodeURIObject({
+                nanoajax.ajax({url: '.', method: 'POST', body: encodeURIObject({
                         project: p,
                         fileName: f,
                         action: "main.fileGetContent"
@@ -297,7 +297,7 @@
 
                 nanoajax.ajax(
                     {
-                        url: '/',
+                        url: '.',
                         method: 'POST',
                         body: encodeURIObject({
                                 project:  project,
@@ -327,7 +327,7 @@
             function reverse() {
                 nanoajax.ajax(
                     {
-                        url: '/',
+                        url: '.',
                         method: 'POST',
                         body: encodeURIObject({
                             project:  project,
