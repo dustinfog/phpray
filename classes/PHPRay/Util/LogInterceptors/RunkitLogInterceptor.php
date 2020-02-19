@@ -15,7 +15,7 @@ class RunkitLogInterceptor extends LogIntercepterBase
 
     public function isEnabled()
     {
-        return extension_loaded("runkit");
+        return extension_loaded("runkit") ||  extension_loaded("runkit7");
     }
 
     public function writeLog()
