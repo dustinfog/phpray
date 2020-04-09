@@ -18,6 +18,10 @@ class Auth
         foreach ($users as $user) {
             if ($user["username"] == $userName && $user["password"] == $password && self::isValidIP(self::getIP(), $user["allowIps"])) {
                 $found = true;
+
+                $_SESSION['PHP_AUTH_USER'] = $user["username"];
+                $_SESSION['PHP_ALLOW_MODIFY'] = isset($user['allowModify']) && $user['allowModify'] == true;
+
                 break;
             }
         }
@@ -75,7 +79,7 @@ class Auth
     {
         if ($_SERVER['REMOTE_ADDR'] == "127.0.0.1") {
             $users = Auth::getUsers();
-            $_SESSION['PHP_AUTH_USER'] = $users[0]["username"];
+            self::auth($users[0]["username"], $users[0]["password"]);
             return true;
         }
 
@@ -84,12 +88,15 @@ class Auth
         }
 
         if (isset($_SERVER['PHP_AUTH_USER']) && self::auth($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'])) {
-            $_SESSION['PHP_AUTH_USER'] = $_SERVER['PHP_AUTH_USER'];
             return true;
         }
 
         header('WWW-Authenticate: Basic realm="My Realm"');
         header('HTTP/1.0 401 Unauthorized');
         return false;
+    }
+
+    public static function allowModify() {
+        return isset($_SESSION['PHP_ALLOW_MODIFY']) && $_SESSION['PHP_ALLOW_MODIFY'] == true;
     }
 }
