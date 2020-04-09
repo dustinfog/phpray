@@ -188,6 +188,7 @@
             var changeDetectTimer = 0;
             var fileName;
             var project;
+            var allowModify = Boolean(<?php echo \PHPRay\Util\Auth::allowModify(); ?>);
 
             window.onload = function (ev) {
                 initEditorWindow();
@@ -254,6 +255,10 @@
             }
 
             function edit(p, f, line) {
+                if (!allowModify) {
+                    return;
+                }
+
                 nanoajax.ajax({url: '.', method: 'POST', body: encodeURIObject({
                         project: p,
                         fileName: f,

@@ -15,6 +15,12 @@ class Config
 
     public static function load($config)
     {
+        static $_caches = [];
+
+        if (isset($_caches[$config])) {
+            return $_caches[$config];
+        }
+
         $dir = PHPRAY_CONF_ROOT . $config;
         if (is_dir($dir)) {
             $configs = array();
@@ -23,17 +29,18 @@ class Config
                     continue;
                 }
 
-
                 $configs[] = include_once($dir . DIRECTORY_SEPARATOR . $fileName);
             }
 
+            $_caches[$config] = $configs;
             return $configs;
         }
 
 
         $file = PHPRAY_CONF_ROOT . $config . ".php";
         if (is_file($file)) {
-            return include_once($file);
+            $_caches[$config] = include_once($file);
+            return $_caches[$config];
         }
 
         return null;
