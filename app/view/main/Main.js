@@ -5,7 +5,6 @@
  *
  *
  */
-//vjhvwhvhughirgjhu
 Ext.define('PhpRay.view.main.Main', {
     extend: 'Ext.container.Viewport',
     xtype: 'app-main',
@@ -159,6 +158,9 @@ Ext.define('PhpRay.view.main.Main', {
                     data: []
                 }),
                 displayField: 'value',
+                onTriggerClick: function() {
+                    Ext.getCmp('history').expand(true);
+                },
                 listeners: {
                     select: function (combo, record, opts) {
                         historyValue = record.data['value'];
@@ -457,7 +459,6 @@ Ext.define('PhpRay.view.main.Main', {
                 store: Ext.create('Ext.data.TreeStore', {
                     root: {
                         id: 'treeFile',
-                        mixins: ['MyExtend.lib.TreeFilter'],
                         expanded: true,
                     }
                 }),
@@ -523,8 +524,9 @@ Ext.define('PhpRay.view.main.Main', {
                     },
                     itemdblclick: function (node, e) {
                         $(this).data('double', 2);
-                        fileName = e.data.text;
                         if (e.data.leaf === true) {
+                            fileName = e.data.text;
+                            getFileMethod();
                             Ext.create('PhpRay.view.main.Code').show();
                             codeEditor();
                             edit();
@@ -553,7 +555,6 @@ Ext.define('PhpRay.view.main.Main', {
                 store: Ext.create('Ext.data.TreeStore', {
                     root: {
                         id: 'treeMethod',
-                        unstyled: true,
                         expanded: true,
                     }
                 }),
@@ -675,7 +676,6 @@ Ext.define('PhpRay.view.main.Main', {
                 }),
                 listeners: {
                     itemclick: function () {
-                        this.getSelectionModel().clearSelections();
                         this.getView().refresh();
                     }
                 }
@@ -717,9 +717,12 @@ Ext.define('PhpRay.view.main.Main', {
                                 Ext.getCmp('errorTree').store.getNodeById('treeError').removeAll(true);
                                 Ext.getCmp('errorTree').store.getNodeById('treeError').appendChild(errorData);
                                 Ext.getCmp('errorTree').expandAll();
+                                Ext.getCmp('errorMessage').hide();
+                                Ext.getCmp('errorTree').show();
                             } else {
-                                let messageData = new DataObj(rec.data.message, null, true, 'icon-return-leaf');
-                                Ext.getCmp('errorTree').store.getNodeById('treeError').appendChild(messageData);
+                                Ext.getCmp('errorMessage').setHtml(rec.data.message);
+                                Ext.getCmp('errorTree').hide();
+                                Ext.getCmp('errorMessage').show();
                             }
                             Ext.getCmp('errorTable').store.removeAll();
                             Ext.getCmp('errorTable').store.add(new ErrorTableObj(resultError[errorPage].file, resultError[errorPage].line));
@@ -737,7 +740,6 @@ Ext.define('PhpRay.view.main.Main', {
                     xtype: 'logList',
                     listeners: {
                         select: function () {
-                            this.getSelectionModel().clearSelections();
                             this.getView().refresh();
                         },
                         itemclick: function (view, rec, node, index, e, options) {
@@ -751,9 +753,13 @@ Ext.define('PhpRay.view.main.Main', {
                                 let logData = returnRootData(message);
                                 Ext.getCmp('logTree').store.getNodeById('treeLog').removeAll(true);
                                 Ext.getCmp('logTree').store.getNodeById('treeLog').appendChild(logData);
+                                Ext.getCmp('logTree').store.getNodeById('treeLog').expand();
+                                Ext.getCmp('logMessage').hide();
+                                Ext.getCmp('logTree').show();
                             } else {
-                                let messageData = new DataObj(message, null, true, 'icon-return-leaf');
-                                Ext.getCmp('logTree').store.getNodeById('treeLog').appendChild(messageData);
+                                Ext.getCmp('logMessage').setHtml(message);
+                                Ext.getCmp('logTree').hide();
+                                Ext.getCmp('logMessage').show();
                             }
                             Ext.getCmp('logTable').store.removeAll();
                             Ext.getCmp('logTable').store.add(resultLogs[logPage].backtrace);

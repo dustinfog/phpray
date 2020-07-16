@@ -180,7 +180,7 @@
     font-weight: bolder !important;
 }
 
-#errorTree, #errorTable, #errorContent, #memoContent, #logTree, #logTable, #logContent {
+#errorTree, #errorTable, #errorContent, #memoContent, #logTree, #logTable, #logContent, #logMessage, #errorMessage {
     border: 1px solid #cccccc !important;
 }
 

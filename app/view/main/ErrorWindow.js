@@ -40,9 +40,12 @@ Ext.define('PhpRay.view.main.ErrorWindow', { //错误弹窗
                             let errorData = returnRootData(resultError[errorPage].exception);
                             Ext.getCmp('errorTree').store.getNodeById('treeError').appendChild(errorData);
                             Ext.getCmp('errorTree').expandAll();
+                            Ext.getCmp('errorTree').show();
+                            Ext.getCmp('errorMessage').hide();
                         } else {
-                            let messageData = new DataObj(rec.data.message, null, true, 'icon-return-leaf');
-                            Ext.getCmp('errorTree').store.getNodeById('treeError').appendChild(messageData);
+                            Ext.getCmp('errorMessage').setHtml(resultError[errorPage].message);
+                            Ext.getCmp('errorTree').hide();
+                            Ext.getCmp('errorMessage').show();
                         }
                         Ext.getCmp('errorTable').store.removeAll();
                         Ext.getCmp('errorTable').store.add(new ErrorTableObj(resultError[errorPage].file, resultError[errorPage].line));
@@ -80,9 +83,12 @@ Ext.define('PhpRay.view.main.ErrorWindow', { //错误弹窗
                             let errorData = returnRootData(resultError[errorPage].exception);
                             Ext.getCmp('errorTree').store.getNodeById('treeError').appendChild(errorData);
                             Ext.getCmp('errorTree').expandAll();
+                            Ext.getCmp('errorTree').show();
+                            Ext.getCmp('errorMessage').hide();
                         } else {
-                            let messageData = new DataObj(rec.data.message, null, true, 'icon-return-leaf');
-                            Ext.getCmp('errorTree').store.getNodeById('treeError').appendChild(messageData);
+                            Ext.getCmp('errorMessage').setHtml(resultError[errorPage].message);
+                            Ext.getCmp('errorTree').hide();
+                            Ext.getCmp('errorMessage').show();
                         }
                         Ext.getCmp('errorTable').store.removeAll();
                         Ext.getCmp('errorTable').store.add(new ErrorTableObj(resultError[errorPage].file, resultError[errorPage].line));
@@ -98,25 +104,36 @@ Ext.define('PhpRay.view.main.ErrorWindow', { //错误弹窗
         height: 30,
         bodyStyle: 'color:white; font-weight: bolder; font-size: 15px',
     }, {
-        xtype: 'treepanel',
-        id: 'errorTree',
+        xtype: 'panel',
         height: '25%',
         width: '100%',
-        containerScroll: true,
-        rootVisible: false,
-        bodyStyle: 'color:white',
-        store: Ext.create('Ext.data.TreeStore', {
-            root: {
-                id: 'treeError',
-                expanded: true,
+        bodyStyle: 'color:white, overflow: auto;',
+        items: [{
+            xtype: 'panel',
+            id: 'errorMessage',
+            width: '100%',
+            height: 170,
+            bodyStyle: 'overflow-x:hidden;overflow-y:auto; color: white; font-weight: bolder;font-size: 10px',
+        }, {
+            xtype: 'treepanel',
+            id: 'errorTree',
+            width: '100%',
+            height: 170,
+            containerScroll: true,
+            rootVisible: false,
+            bodyStyle: 'color:white',
+            store: Ext.create('Ext.data.TreeStore', {
+                root: {
+                    id: 'treeError',
+                    expanded: true,
+                }
+            }),
+            listeners: {
+                itemclick: function () {
+                    this.getView().refresh();
+                }
             }
-        }),
-        listeners: {
-            itemclick: function () {
-                this.getSelectionModel().clearSelections();
-                this.getView().refresh();
-            }
-        }
+        }]
     }, {
         xtype: 'errorTable',
         height: '25%',

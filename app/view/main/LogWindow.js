@@ -36,9 +36,12 @@ Ext.define('PhpRay.view.main.LogWindow', { //错误弹窗
                             let logData = returnRootData(message);
                             Ext.getCmp('logTree').store.getNodeById('treeLog').appendChild(logData);
                             Ext.getCmp('logTree').expandAll();
+                            Ext.getCmp('logTree').show();
+                            Ext.getCmp('logMessage').hide();
                         } else {
-                            let messageData = new DataObj(message, null, true, 'icon-return-leaf');
-                            Ext.getCmp('logTree').store.getNodeById('treeLog').appendChild(messageData);
+                            Ext.getCmp('logMessage').setHtml(message);
+                            Ext.getCmp('logTree').hide();
+                            Ext.getCmp('logMessage').show();
 
                         }
                         Ext.getCmp('logTable').store.removeAll();
@@ -65,16 +68,19 @@ Ext.define('PhpRay.view.main.LogWindow', { //错误弹窗
                         }
                         logPage++;
                         Ext.getCmp('logPage').setText((logPage + 1) + '/' + logTotalPage); //页数
-                        Ext.getCmp('titleLog').setHtml('调用者:  ' +  resultLogs[logPage].logger);
+                        Ext.getCmp('titleLog').setHtml('调用者:  ' + resultLogs[logPage].logger);
                         let message = resultLogs[logPage].message;
-                        Ext.getCmp('logTree').store.getNodeById('treeLog').removeAll(true);
                         if (message instanceof Object) {
                             let logData = returnRootData(message);
+                            Ext.getCmp('logTree').store.getNodeById('treeLog').removeAll(true);
                             Ext.getCmp('logTree').store.getNodeById('treeLog').appendChild(logData);
                             Ext.getCmp('logTree').expandAll();
+                            Ext.getCmp('logTree').show();
+                            Ext.getCmp('logMessage').hide();
                         } else {
-                            let messageData = new DataObj(message, null, true, 'icon-return-leaf');
-                            Ext.getCmp('logTree').store.getNodeById('treeLog').appendChild(messageData);
+                            Ext.getCmp('logMessage').setHtml(message);
+                            Ext.getCmp('logTree').hide();
+                            Ext.getCmp('logMessage').show();
                         }
 
                         Ext.getCmp('logTable').store.removeAll();
@@ -90,25 +96,36 @@ Ext.define('PhpRay.view.main.LogWindow', { //错误弹窗
         height: 30,
         bodyStyle: 'color:white; font-weight: bolder; font-size: 15px',
     }, {
-        xtype: 'treepanel',
-        id: 'logTree',
+        xtype: 'panel',
         height: '25%',
         width: '100%',
-        containerScroll: true,
-        rootVisible: false,
-        bodyStyle: 'color:white',
-        store: Ext.create('Ext.data.TreeStore', {
-            root: {
-                id: 'treeLog',
-                expanded: true,
+        bodyStyle: 'color:white, overflow: auto;',
+        items: [ {
+            xtype: 'panel',
+            id: 'logMessage',
+            width: '100%',
+            height: 170,
+            bodyStyle: 'overflow-x:hidden;overflow-y:auto; color: white; font-weight: bolder;font-size: 10px',
+        },{
+            xtype: 'treepanel',
+            id: 'logTree',
+            width: '100%',
+            height: 170,
+            containerScroll: true,
+            rootVisible: false,
+            bodyStyle: 'color:white, overflow-y: auto;',
+            store: Ext.create('Ext.data.TreeStore', {
+                root: {
+                    id: 'treeLog',
+                    expanded: true,
+                }
+            }),
+            listeners: {
+                itemclick: function () {
+                    this.getView().refresh();
+                }
             }
-        }),
-        listeners: {
-            itemclick: function () {
-                this.getSelectionModel().clearSelections();
-                this.getView().refresh();
-            }
-        }
+        }],
     }, {
         xtype: 'errorTable',
         height: '25%',
@@ -141,7 +158,6 @@ Ext.define('PhpRay.view.main.LogWindow', { //错误弹窗
                                 document.getElementById('logContent').innerHTML = datum.code;
                             },
                         });
-                        that.getSelectionModel().clearSelections();
                         that.getView().refresh();
                     }
                 }, 300);
@@ -188,7 +204,6 @@ Ext.define('PhpRay.view.main.LogWindow', { //错误弹窗
                         }
                     }
                 });
-                this.getSelectionModel().clearSelections();
                 this.getView().refresh();
             },
         }
