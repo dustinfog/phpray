@@ -5,6 +5,7 @@
  *
  *
  */
+//vjhvwhvhughirgjhu
 Ext.define('PhpRay.view.main.Main', {
     extend: 'Ext.container.Viewport',
     xtype: 'app-main',
@@ -395,7 +396,14 @@ Ext.define('PhpRay.view.main.Main', {
                 text: '清空缓存',
                 listeners: {
                     click: function () {
-                        Ext.create('PhpRay.view.main.ClearCache').show();
+                        if (!project) {
+                            Ext.Msg.alert('Failed', '请先选择项目');
+                        } else if (!historyValue) {
+                            Ext.Msg.alert('Failed', '请选择清缓存的Method');
+                        } else {
+                            Ext.create('PhpRay.view.main.ClearCache').show();
+                            Ext.getCmp('clearContent').select(Ext.getCmp('clearContent').store.getAt(0));
+                        }
                     }
                 }
             }, {
@@ -507,8 +515,6 @@ Ext.define('PhpRay.view.main.Main', {
                                     }
                                     fileName = e.data.text;
                                     getFileMethod();
-                                    that.getSelectionModel().clearSelections();
-                                    that.getView().refresh();
                                 }
                             }, 300);
                         }
@@ -523,8 +529,6 @@ Ext.define('PhpRay.view.main.Main', {
                             codeEditor();
                             edit();
                         }
-                        this.getSelectionModel().clearSelections();
-                        this.getView().refresh();
                     }
                 }
             }]
@@ -597,8 +601,6 @@ Ext.define('PhpRay.view.main.Main', {
                         if (e.data.leaf === true) {
                             methodName = e.data.text.split('(')[0];
                             getTestCode();
-                            this.getSelectionModel().clearSelections();
-                            this.getView().refresh();
                         }
                     },
                 }
@@ -714,6 +716,7 @@ Ext.define('PhpRay.view.main.Main', {
                                 let errorData = returnRootData(resultError[errorPage].exception);
                                 Ext.getCmp('errorTree').store.getNodeById('treeError').removeAll(true);
                                 Ext.getCmp('errorTree').store.getNodeById('treeError').appendChild(errorData);
+                                Ext.getCmp('errorTree').expandAll();
                             } else {
                                 let messageData = new DataObj(rec.data.message, null, true, 'icon-return-leaf');
                                 Ext.getCmp('errorTree').store.getNodeById('treeError').appendChild(messageData);
@@ -721,7 +724,6 @@ Ext.define('PhpRay.view.main.Main', {
                             Ext.getCmp('errorTable').store.removeAll();
                             Ext.getCmp('errorTable').store.add(new ErrorTableObj(resultError[errorPage].file, resultError[errorPage].line));
                             Ext.getCmp('errorTable').store.add(resultError[errorPage].backtrace);
-                            this.getSelectionModel().clearSelections();
                             this.getView().refresh();
                         },
                     }
@@ -769,7 +771,6 @@ Ext.define('PhpRay.view.main.Main', {
                     id: 'profile',
                     listeners: {
                         select: function () {
-                            this.getSelectionModel().clearSelections();
                             this.getView().refresh();
                         },
                     }

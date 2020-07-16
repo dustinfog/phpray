@@ -35,6 +35,7 @@ Ext.define('PhpRay.view.main.LogWindow', { //错误弹窗
                         if (message instanceof Object) {
                             let logData = returnRootData(message);
                             Ext.getCmp('logTree').store.getNodeById('treeLog').appendChild(logData);
+                            Ext.getCmp('logTree').expandAll();
                         } else {
                             let messageData = new DataObj(message, null, true, 'icon-return-leaf');
                             Ext.getCmp('logTree').store.getNodeById('treeLog').appendChild(messageData);
@@ -70,6 +71,7 @@ Ext.define('PhpRay.view.main.LogWindow', { //错误弹窗
                         if (message instanceof Object) {
                             let logData = returnRootData(message);
                             Ext.getCmp('logTree').store.getNodeById('treeLog').appendChild(logData);
+                            Ext.getCmp('logTree').expandAll();
                         } else {
                             let messageData = new DataObj(message, null, true, 'icon-return-leaf');
                             Ext.getCmp('logTree').store.getNodeById('treeLog').appendChild(messageData);

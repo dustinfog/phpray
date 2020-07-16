@@ -39,11 +39,11 @@ Ext.define('PhpRay.view.main.ErrorWindow', { //错误弹窗
                         if (resultError[errorPage].exception) {
                             let errorData = returnRootData(resultError[errorPage].exception);
                             Ext.getCmp('errorTree').store.getNodeById('treeError').appendChild(errorData);
+                            Ext.getCmp('errorTree').expandAll();
                         } else {
                             let messageData = new DataObj(rec.data.message, null, true, 'icon-return-leaf');
                             Ext.getCmp('errorTree').store.getNodeById('treeError').appendChild(messageData);
                         }
-                        Ext.getCmp('errorTree').setHtml('');
                         Ext.getCmp('errorTable').store.removeAll();
                         Ext.getCmp('errorTable').store.add(new ErrorTableObj(resultError[errorPage].file, resultError[errorPage].line));
                         Ext.getCmp('errorTable').store.add(resultError[errorPage].backtrace);
@@ -79,6 +79,7 @@ Ext.define('PhpRay.view.main.ErrorWindow', { //错误弹窗
                         if (resultError[errorPage].exception) {
                             let errorData = returnRootData(resultError[errorPage].exception);
                             Ext.getCmp('errorTree').store.getNodeById('treeError').appendChild(errorData);
+                            Ext.getCmp('errorTree').expandAll();
                         } else {
                             let messageData = new DataObj(rec.data.message, null, true, 'icon-return-leaf');
                             Ext.getCmp('errorTree').store.getNodeById('treeError').appendChild(messageData);
@@ -148,7 +149,6 @@ Ext.define('PhpRay.view.main.ErrorWindow', { //错误弹窗
                                 document.getElementById('errorContent').innerHTML = datum.code;
                             },
                         });
-                        that.getSelectionModel().clearSelections();
                         that.getView().refresh();
                     }
                 }, 300);
@@ -195,7 +195,6 @@ Ext.define('PhpRay.view.main.ErrorWindow', { //错误弹窗
                         }
                     }
                 });
-                this.getSelectionModel().clearSelections();
                 this.getView().refresh();
             },
         }

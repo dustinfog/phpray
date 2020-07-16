@@ -49,8 +49,8 @@ function getTestCode() {
                             let db = event.target.result;
                             let tx = db.transaction(historyDB, 'readwrite');
                             let store = tx.objectStore(historyDB);
-                            let reqAdd = store.add({'value': className + '::' + methodName});
-                            reqAdd.onsuccess = function (event) {
+                            let reqAddHistory = store.add({'value': className + '::' + methodName});
+                            reqAddHistory.onsuccess = function (event) {
                                 let reqGet = store.getAll();
                                 reqGet.onsuccess = function (event) {
                                     Ext.getCmp('history').store.removeAll();
@@ -59,8 +59,21 @@ function getTestCode() {
                                     }
                                 };
                             };
+
+                            let storeProject = db.transaction(project, 'readwrite').objectStore(project);
+                            let reqAddProject = storeProject.put({
+                                'classAndMethod': className + '::' + methodName,
+                                'initCode': classCode,
+                                'testCode': methodCode
+                            });
+                            reqAddProject.onsuccess = function (e) {
+                                //console.log('测试代码保存成功');
+                            };
+
+                            db.close();
                         };
                         Ext.getCmp('history').setValue(className + '::' + methodName);
+                        historyValue = className + '::' + methodName;
 
                     },
                 });
@@ -85,12 +98,14 @@ function getTestCode() {
                             codeEditorInit('<?php' + '\r' + (eventData.initCode === null ? classCode : eventData.initCode));
                             codeEditorTest('<?php' + '\r' + (eventData.testCode === null ? methodCode : eventData.testCode));
                             Ext.getCmp('history').setValue(className + '::' + methodName);
+                            historyValue = className + '::' + methodName;
                         }
                     });
                 } else {
                     codeEditorInit('<?php' + '\r' + eventData.initCode);
                     codeEditorTest('<?php' + '\r' + eventData.testCode);
                     Ext.getCmp('history').setValue(className + '::' + methodName);
+                    historyValue = className + '::' + methodName;
                 }
             }
         };
@@ -113,6 +128,7 @@ function getFileMethod() {
             Ext.getCmp('ztreeMethod').store.getNodeById('treeMethod').removeAll(true);
             zNodeMethod = rootMethodData(Ext.decode(data.responseText)[0]);
             Ext.getCmp('ztreeMethod').store.getNodeById('treeMethod').appendChild(zNodeMethod);
+            Ext.getCmp('ztreeMethod').expandAll();
         },
     });
 }

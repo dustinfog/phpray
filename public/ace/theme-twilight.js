@@ -92,7 +92,8 @@ color: #E9C062\
 }\
 .ace-twilight .ace_comment {\
 font-style: italic;\
-color: #5F5A60\
+font-weight: bolder;\
+color: #6AAE36\
 }\
 .ace-twilight .ace_variable {\
 color: #7587A6\

@@ -57,7 +57,7 @@
 
 .x-tree-icon {
     line-height:0 !important; margin:0 !important; width:16px!important; height:16px !important; display: inline-block!important; vertical-align:middle !important;
-    border:0 none !important; cursor: pointer !important;outline:none !important;
+    border:0 none !important;outline:none !important;
     background-color:transparent !important; background-repeat:no-repeat !important; background-attachment: scroll !important;
     background-image:url("resources/assets/zTreeStandard.png") !important; *background-image:url("resources/assets/zTreeStandard.gif") !important;
 }
@@ -185,11 +185,15 @@
     width: 200px !important;
     left: 150px !important;
 }
-.x-grid-cell
+.x-grid-item
 {
     background-color: #2B2B2B !important;
     color: white !important;
     font-weight: bolder !important;
+}
+
+.x-grid-item-selected {
+    background-color: #0D293E !important;
 }
 
 .x-combo-list {
@@ -197,11 +201,10 @@
 }
 .x-combo-list .x-combo-selected2{
     /*border-color:#cccccc !important;*/
-    cursor:pointer !important;
+    /*cursor:pointer !important;*/
     background-color:#3C3F41 !important;
 }
-
-.x-splitter.x-border-item.x-box-item.x-splitter-default {
+.x-splitter {
     background-color: #303030 !important;
 }
 
@@ -259,7 +262,7 @@
 }
 
 .x-form-text-default {
-    background-color: #3C3F41 !important;
+    background: #3C3F41 !important;
     color: #fff !important;
     border: 0 !important;
 }
