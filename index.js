@@ -390,11 +390,11 @@ function rootMethodLeafData(Data) {
         if (Data1['isStatic']) {
             data['iconCls'] += '-static';
         }
-        // if (Data1['isConstructor']) {
-        //   data['iconCls'] += '-constructor';
-        // }
         if (Data1['isInherent']) {
             data['iconCls'] += '-inherent';
+        }
+        if (Data1['isConstructor']) {
+          data['iconCls'] += '-constructor';
         }
         result[j] = new DataObj(data['text'], data['children'], data['leaf'], data['iconCls']);
     }

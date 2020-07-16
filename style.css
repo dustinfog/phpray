@@ -86,6 +86,13 @@
     background-image: url("resources/assets/method_public.gif") !important;
 }
 
+.x-tree-icon.icon-method-public-constructor {
+    background: url("resources/assets/construct.gif") 90% 100% no-repeat, url("resources/assets/method_public.gif") no-repeat !important;
+}
+
+.x-tree-icon.icon-method-public-inherent-constructor {
+    background: url("resources/assets/inherent.gif") 90% 0% no-repeat ,url("resources/assets/construct.gif") 90% 100% no-repeat, url("resources/assets/method_public.gif") no-repeat !important;
+}
 .x-tree-icon.icon-method-public-static {
     background: url("resources/assets/static.gif") 90% 100% no-repeat, url("resources/assets/method_public.gif") no-repeat !important;
 }
@@ -95,11 +102,19 @@
 }
 
 .x-tree-icon.icon-method-public-static-inherent {
-    background: url("resources/assets/static.gif") 90% 0% no-repeat, url("resources/assets/inherent.gif") 90% 30% no-repeat, url("resources/assets/method_public.gif") no-repeat !important;
+    background: url("resources/assets/static.gif") 90% 0% no-repeat, url("resources/assets/inherent.gif") 90% 100% no-repeat, url("resources/assets/method_public.gif") no-repeat !important;
 }
 
 .x-tree-icon.icon-method-private {
     background-image: url("resources/assets/method_private.gif") !important;
+}
+
+.x-tree-icon.icon-method-private-constructor {
+    background: url("resources/assets/construct.gif") 90% 100% no-repeat, url("resources/assets/method_private.gif") no-repeat !important;
+}
+
+.x-tree-icon.icon-method-private-inherent-constructor {
+    background: url("resources/assets/inherent.gif") 90% 0% no-repeat, url("resources/assets/construct.gif") 90% 100% no-repeat, url("resources/assets/method_private.gif") no-repeat !important;
 }
 
 .x-tree-icon.icon-method-private-static {
@@ -111,11 +126,19 @@
 }
 
 .x-tree-icon.icon-method-private-static-inherent {
-    background: url("resources/assets/static.gif") 90% 0% no-repeat, url("resources/assets/inherent.gif") 90% 30% no-repeat, url("resources/assets/method_private.gif") no-repeat !important;
+    background: url("resources/assets/static.gif") 90% 0% no-repeat, url("resources/assets/inherent.gif") 90% 100% no-repeat, url("resources/assets/method_private.gif") no-repeat !important;
 }
 
 .x-tree-icon.icon-method-protected {
     background-image: url("resources/assets/method_protected.gif") !important;
+}
+
+.x-tree-icon.icon-method-protected-constructor {
+    background: url("resources/assets/construct.gif") 90% 100% no-repeat, url("resources/assets/method_protected.gif") no-repeat !important;
+}
+
+.x-tree-icon.icon-method-protected-inherent-constructor {
+    background: url("resources/assets/inherent.gif") 90% 0% no-repeat, url("resources/assets/construct.gif") 90% 100% no-repeat, url("resources/assets/method_protected.gif") no-repeat !important;
 }
 
 .x-tree-icon.icon-method-protected-static {
@@ -127,7 +150,7 @@
 }
 
 .x-tree-icon.icon-method-protected-static-inherent {
-    background: url("resources/assets/static.gif") 90% 0% no-repeat, url("resources/assets/inherent.gif") 90% 30% no-repeat, url("resources/assets/method_protected.gif") no-repeat !important;
+    background: url("resources/assets/static.gif") 90% 0% no-repeat, url("resources/assets/inherent.gif") 90% 100% no-repeat, url("resources/assets/method_protected.gif") no-repeat !important;
 }
 
 #testCodeTitle, #initCodeTitle, #fileTitle, #daGangTitle {
@@ -193,7 +216,7 @@
 }
 
 .x-grid-item-selected {
-    background-color: #0D293E !important;
+    background-color: #2F65CA !important;
 }
 
 .x-combo-list {
@@ -270,4 +293,8 @@
 .x-panel-body-default {
     border: 5px solid #3C3F41  !important;
     /*background-color: #2B2B2B !important;*/
+}
+
+.x-tree-elbow-plus:before, .x-tree-elbow-end-plus:before {
+    background-color: #6f6f6f !important;
 }
