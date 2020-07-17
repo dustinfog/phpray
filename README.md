@@ -23,7 +23,7 @@
 	cd phpray
 	composer install
 	```
-4. 配置HTTP服务器，添加新的站点，将phpray目录作为站点根目录，当然如果在本地机器可以通过PHP -S host:port index.php来启动PHPRay服务。
+4. 配置HTTP服务器，添加新的站点，将phpray目录下的public作为站点根目录，当然如果在本地机器可以通过PHP -S host:port index.php来启动PHPRay服务。
 
 ## 配置
 
