@@ -166,7 +166,8 @@ Ext.define('PhpRay.view.main.Main', {
                         historyValue = record.data['value'];
                         className = historyValue.split('::')[0];
                         methodName = historyValue.split('::')[1];
-                        fileName = historyValue.split('\\')[1].match(/(\S*)::/)[0] + '.php';
+                        let count = historyValue.split('\\').length;
+                        fileName = historyValue.split('\\')[count - 1].match(/(\S*)::/)[0] + '.php';
                         let dbRequest = indexedDB.open('phpRay');
                         dbRequest.onsuccess = function (e) {
                             let db = e.target.result;

@@ -1,5 +1,4 @@
-![](screenshot.png)
-
+![](screenPhoto.png)
 ## PHPRay是什么
 
 1. PHP控制台: 给测试环境下的项目开一扇门，让开发人员可以不借助前端环境，仅仅以PHP脚本来检视、操作项目逻辑，并以直观的方式展示脚本运行结果。
@@ -15,7 +14,7 @@
 
 1. 环境：
 	* PHP 5.3.0或以上
-	* runkit 扩展
+	* runkit 扩展 (或runkit7扩展)
 	* xhprof 扩展
 2. 在有效的项目测试环境（针对开发环境）下，选择方便http服务部署的路径，执行如下脚本：
 
@@ -24,7 +23,7 @@
 	cd phpray
 	composer install
 	```
-4. 配置HTTP服务器，添加新的站点，将phpray目录下的public目录作为站点根目录，当然如果在本地机器可以通过PHP -S host:port index.php来启动PHPRay服务。
+4. 配置HTTP服务器，添加新的站点，将phpray目录作为站点根目录，当然如果在本地机器可以通过PHP -S host:port index.php来启动PHPRay服务。
 
 ## 配置
 
