@@ -439,16 +439,16 @@ function returnRootData(Data) {
     for (let i in Data) {
         if (i !== 'children') {
             if (i === 'name') {
-                data['text'] = Data[i] + ' => ' + data['text'];
+                data['text'] = '<font style="color:#EDD99A">' + Data[i]  + '</font>' + '<font style="color:#deb887"> => </font>' + data['text'];
             } else if (i === 'accessible') {
 
             } else if (i === 'size') {
-                data['text'] += ' (' + Data[i] + ') ';
+                data['text'] += ' <font style="color:#AF615B"> ( </font>'  + '<font style="color:#AF615B">' + Data[i] + ' </font>' + ' <font style="color:#AF615B ">) </font> ';
             } else if (i === 'value') {
                 data['text'] += ' ' + Data[i] + ' ';
             } else {
                 if (data['text'] === '') {
-                    data['text'] += Data[i];
+                    data['text'] += '<font style="color:#00bcd4">' + Data[i] + '</font>';
                 } else {
                     data['text'] += ' => ' + Data[i];
                 }
