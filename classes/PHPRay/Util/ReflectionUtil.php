@@ -146,7 +146,7 @@ class ReflectionUtil
 
     private static function defineMagicCall($className)
     {
-        if (!extension_loaded("runkit")) {
+        if (!extension_loaded("runkit") && !extension_loaded("runkit7")) {
             return;
         }
 
@@ -169,7 +169,7 @@ class ReflectionUtil
 
     private static function defineMagicCallStatic($className)
     {
-        if (!extension_loaded("runkit")) {
+        if (!extension_loaded("runkit") && !extension_loaded("runkit7")) {
             return;
         }
 

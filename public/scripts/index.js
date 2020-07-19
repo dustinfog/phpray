@@ -124,7 +124,11 @@ function getFileMethod() {
         params: {project: project, fileName: fileName, action: 'main.getClassesAndMethods'},
         dataType: 'json',
         success: function (data, options) {
-            className = Ext.decode(data.responseText)[0].name;
+            let response = Ext.decode(data.responseText);
+            if (response.length === 0) {
+                return;
+            }
+            className = response[0].name;
             Ext.getCmp('ztreeMethod').store.getNodeById('treeMethod').removeAll(true);
             zNodeMethod = rootMethodData(Ext.decode(data.responseText)[0]);
             Ext.getCmp('ztreeMethod').store.getNodeById('treeMethod').appendChild(zNodeMethod);
@@ -226,7 +230,7 @@ function save() {
         params: {project: project, fileName: fileName, action: 'main.filePutContent', content: editor.getValue()},
         dataType: 'json',
         success: function (code, options) {
-            let response = code.responseText;
+            let response = Ext.decode(code.responseText);
             if (response) {
                 if (response.error) {
                     alert(response.error);

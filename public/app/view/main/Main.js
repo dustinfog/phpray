@@ -276,6 +276,8 @@ Ext.define('phpray.view.main.Main', {
                         Ext.getCmp('run').setStyle('cursor', 'wait');
                         Ext.getCmp('run').disable();
                         Ext.getCmp('stop').enable();
+                        let testClassName = historyValue.split('::')[0];
+                        let testFileName = testClassName +  '.php';
                         stopAjax = Ext.Ajax.request({
                             url: 'index.php',
                             method: 'POST',
@@ -283,8 +285,8 @@ Ext.define('phpray.view.main.Main', {
                                 methodCode: methodCode,
                                 classCode: classCode,
                                 project: project,
-                                className: className,
-                                fileName: fileName,
+                                className: testClassName,
+                                fileName: testFileName,
                                 action: 'main.runTest',
                             },
                             dataType: 'json',
@@ -375,6 +377,8 @@ Ext.define('phpray.view.main.Main', {
                 listeners: {
                     click: function () {
                         Ext.Ajax.abort(stopAjax);
+                        Ext.getCmp('run').setStyle('cursor', 'pointer');
+                        Ext.getCmp('run').enable();
                         Ext.getCmp('stop').disable();
                     }
                 }
