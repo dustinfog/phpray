@@ -53,7 +53,7 @@ Ext.define('phpray.view.main.Main', {
                 forceSelection: true,
                 autoLoad: false,
                 emptyText: '请选择项目',
-                fieldStyle:'background-color: #303030; color:white;  font-weight: bolder; border: 0.1px solid #cccc, margin: 0 0 0 0; padding: 0',
+                fieldStyle: 'background-color: #303030; color:white; font-weight: bolder; border-color: #5E6060; border-radius: 3px; margin: 0 0 0 0; padding: 0 0 0 10px',
                 projectList: Ext.Ajax.request({
                     url: 'index.php',
                     params: {action: 'main.getProjects'},
@@ -152,13 +152,13 @@ Ext.define('phpray.view.main.Main', {
                 flex: 1,
                 blankText: 'history',
                 emptyText: 'history',
-                fieldStyle:'background-color: #303030; color:white; font-weight: bolder; border: 0.1px solid #cccc, margin: 0 0 0 0; padding: 0',
+                fieldStyle: 'background-color: #303030; color:white; font-weight: bolder; border-color: #5E6060; border-radius: 3px; margin: 0 0 0 0; padding: 0 0 0 10px',
                 store: Ext.create('Ext.data.Store', {
                     fields: ['value'],
                     data: []
                 }),
                 displayField: 'value',
-                onTriggerClick: function() {
+                onTriggerClick: function () {
                     Ext.getCmp('history').expand(true);
                 },
                 listeners: {
@@ -277,7 +277,7 @@ Ext.define('phpray.view.main.Main', {
                         Ext.getCmp('run').disable();
                         Ext.getCmp('stop').enable();
                         let testClassName = historyValue.split('::')[0];
-                        let testFileName = testClassName +  '.php';
+                        let testFileName = testClassName + '.php';
                         stopAjax = Ext.Ajax.request({
                             url: 'index.php',
                             method: 'POST',
@@ -344,7 +344,7 @@ Ext.define('phpray.view.main.Main', {
                                 function LogObj(recorder, message) {
                                     this.recorder = recorder;
                                     if (message instanceof Object) {
-                                        message = message['type']+ '(' + message['size'] + ')';
+                                        message = message['type'] + '(' + message['size'] + ')';
                                     }
                                     this.message = message;
                                 }
@@ -452,7 +452,7 @@ Ext.define('phpray.view.main.Main', {
                 region: 'north',
                 xtype: 'panel',
                 id: 'fileTitle',
-                bodyStyle: "background-color:#3D3F41;padding:10 0 10 10;font-size:15px;font-weight:bolder;color:white;border:1px solid #ccc",
+                bodyStyle: "background-color:#3D3F41;padding:10 0 10 10;font-size:15px;font-weight:bolder;color:white;border-color: #5E6060",
                 height: 30,
                 html: '文件',
             }, {
@@ -479,7 +479,7 @@ Ext.define('phpray.view.main.Main', {
                         xtype: 'textfield',
                         width: '100%',
                         id: 'search',
-                        fieldStyle:'background-color: #3C3F41; color:white; font-weight: bolder;border:#303030',
+                        fieldStyle: 'background-color: #3C3F41; color:white; font-weight: bolder;border:#303030',
                         bodyStyle: 'background: black; color: white',
                         listeners: {
                             change: function (field, newVal) {
@@ -519,7 +519,17 @@ Ext.define('phpray.view.main.Main', {
                                     if (e.data.text === Ext.getCmp('search').getValue()) {
                                         return;
                                     }
-                                    fileName = e.data.text;
+                                    let parent = e.parentNode;
+                                    let text = e.data.text;
+                                    while (parent.data.text !== 'Root') {
+                                        if (parent.data.text) {
+                                            text = parent.data.text + '/' + text;
+                                        }
+
+                                        parent = parent.parentNode;
+                                    }
+
+                                    fileName = text;
                                     getFileMethod();
                                 }
                             }, 300);
@@ -530,7 +540,15 @@ Ext.define('phpray.view.main.Main', {
                     itemdblclick: function (node, e) {
                         $(this).data('double', 2);
                         if (e.data.leaf === true) {
-                            fileName = e.data.text;
+                            let parent = e.parentNode;
+                            let text = e.data.text;
+                            while (parent.data.text !== 'Root') {
+                                if (parent.data.text) {
+                                    text = parent.data.text + '/' + text;
+                                }
+                                parent = parent.parentNode;
+                            }
+                            fileName = text;
                             getFileMethod();
                             Ext.create('phpray.view.main.Code').show();
                             codeEditor();
@@ -548,7 +566,7 @@ Ext.define('phpray.view.main.Main', {
                 region: 'north',
                 xtype: 'panel',
                 id: 'daGangTitle',
-                bodyStyle: "background-color: #3D3F41; padding:10 0 10 10;font-size:15px;font-weight:bolder;border:0.1px solid #ccc; color: white ",
+                bodyStyle: "background-color: #3D3F41; padding:10 0 10 10;font-size:15px;font-weight:bolder;border: #5E6060; color: white ",
                 height: 30,
                 html: '大纲',
             }, {
@@ -571,7 +589,7 @@ Ext.define('phpray.view.main.Main', {
                         xtype: 'textfield',
                         width: '100%',
                         id: 'methodSearch',
-                        fieldStyle:'background-color: #3C3F41; color:white; font-weight: bolder; border:#303030',
+                        fieldStyle: 'background-color: #3C3F41; color:white; font-weight: bolder; border:#303030',
                         listeners: {
                             change: function (field, newVal) {
                                 let reportBuilderStore = field.up('panel').getStore();
@@ -603,7 +621,11 @@ Ext.define('phpray.view.main.Main', {
                 rootVisible: false,
                 singleExpand: false,
                 listeners: {
-                    itemclick: function (node, e) {
+                    itemmouseenter: function (node, e) {
+                        let str = '<font style="color: #B6694F; font-weight: bolder">' + e.data.text + '</font>' + '<font style="font-weight:bolder; color: red;">' + '=========' + '</font>' + '<font style="font-weight: bolder">' + e.data.description + '</font>';
+                        e.set('qtip', str);
+                    },
+                    itemdblclick: function (node, e) {
                         if (e.data.leaf === true) {
                             methodName = e.data.text.split('(')[0];
                             getTestCode();
@@ -732,7 +754,7 @@ Ext.define('phpray.view.main.Main', {
                             Ext.getCmp('errorTable').store.removeAll();
                             Ext.getCmp('errorTable').store.add(new ErrorTableObj(resultError[errorPage].file, resultError[errorPage].line));
                             Ext.getCmp('errorTable').store.add(resultError[errorPage].backtrace);
-                            this.getView().refresh();
+                            // this.getView().refresh();
                         },
                     }
                 }]
@@ -758,7 +780,7 @@ Ext.define('phpray.view.main.Main', {
                                 let logData = returnRootData(message);
                                 Ext.getCmp('logTree').store.getNodeById('treeLog').removeAll(true);
                                 Ext.getCmp('logTree').store.getNodeById('treeLog').appendChild(logData);
-                                Ext.getCmp('logTree').store.getNodeById('treeLog').expand();
+                                Ext.getCmp('logTree').expandAll();
                                 Ext.getCmp('logMessage').hide();
                                 Ext.getCmp('logTree').show();
                             } else {
@@ -769,7 +791,7 @@ Ext.define('phpray.view.main.Main', {
                             Ext.getCmp('logTable').store.removeAll();
                             Ext.getCmp('logTable').store.add(resultLogs[logPage].backtrace);
                             this.getSelectionModel().clearSelections();
-                            this.getView().refresh();
+                            // this.getView().refresh();
                         },
                     }
                 }]

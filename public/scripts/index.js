@@ -130,7 +130,7 @@ function getFileMethod() {
             }
             className = response[0].name;
             Ext.getCmp('ztreeMethod').store.getNodeById('treeMethod').removeAll(true);
-            zNodeMethod = rootMethodData(Ext.decode(data.responseText)[0]);
+            zNodeMethod = rootMethodData(response[0]);
             Ext.getCmp('ztreeMethod').store.getNodeById('treeMethod').appendChild(zNodeMethod);
             Ext.getCmp('ztreeMethod').expandAll();
         },
@@ -342,11 +342,12 @@ function codeEditorTest(data) {
 
 
 //数据处理成树形结构识别的对象
-function DataObj(text, children = null, leaf = true, iconCls) {
+function DataObj(text, children = null, leaf = true, iconCls, description = null) {
     this.text = text;
     this.children = children;
     this.leaf = leaf;
     this.iconCls = iconCls;
+    this.description = description;
 }
 
 // 文件的树形数据结构处理
@@ -359,7 +360,8 @@ function rootFileData(Data) {
         for (let i in Data1) {
             if (i !== 'children') {
                 if (i === 'name') {
-                    data['text'] = Data1[i];
+                    let arr = Data1[i].split('/');
+                    data['text'] = arr[arr.length - 1];
                 } else if (i === 'isBranch') {
                     data['leaf'] = !Data1[i];
                 }
@@ -379,28 +381,29 @@ function rootFileData(Data) {
 function rootMethodLeafData(Data) {
     let result = [];
     for (let j in Data) {
-        let Data1 = Data[j];
+        let DataNum = Data[j];
         let data = [];
-        data['text'] = Data1['name'];
-        data['leaf'] = !Data1['isBranch'];
+        data['text'] = DataNum['name'];
+        data['leaf'] = !DataNum['isBranch'];
+        data['description'] = DataNum['description'];
         data['iconCls'] = '';
-        if (Data1['accessible'] === 1) {
+        if (DataNum['accessible'] === 1) {
             data['iconCls'] = 'icon-method-public';
-        } else if (Data1['accessible'] === 3) {
+        } else if (DataNum['accessible'] === 3) {
             data['iconCls'] = 'icon-method-private';
-        } else if (Data1['accessible'] === 2) {
+        } else if (DataNum['accessible'] === 2) {
             data['iconCls'] = 'icon-method-protected';
         }
-        if (Data1['isStatic']) {
+        if (DataNum['isStatic']) {
             data['iconCls'] += '-static';
         }
-        if (Data1['isInherent']) {
+        if (DataNum['isInherent']) {
             data['iconCls'] += '-inherent';
         }
-        if (Data1['isConstructor']) {
+        if (DataNum['isConstructor']) {
           data['iconCls'] += '-constructor';
         }
-        result[j] = new DataObj(data['text'], data['children'], data['leaf'], data['iconCls']);
+        result[j] = new DataObj(data['text'], data['children'], data['leaf'], data['iconCls'], data['description']);
     }
 
     return result;
@@ -416,6 +419,8 @@ function rootMethodData(Data) {
                 data['text'] = Data[i];
             } else if (i === 'isBranch') {
                 data['leaf'] = !Data[i];
+            } else if (i === 'description') {
+                data['description'] = Data[i];
             }
         } else if (i === 'children') {
             if (Data[i] === null) continue;
@@ -424,7 +429,7 @@ function rootMethodData(Data) {
             data['children'] = rootMethodLeafData(Data['children']);
         }
     }
-    return new DataObj(data['text'], data['children'], data['leaf'], data['iconCls']);
+    return new DataObj(data['text'], data['children'], data['leaf'], data['iconCls'], data['description']);
 }
 
 //处理return和error数据格式，使treepanel可以识别

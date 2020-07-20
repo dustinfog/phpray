@@ -1,24 +1,26 @@
 Ext.define('phpray.view.main.Code', {
     extend: 'Ext.window.Window',
-    height: 760,
-    width: 1024,
+    height: '85%',
+    width: '60%',
     id: 'editorWindow',
     modal: true, //背景变灰
     closable: true,
     maximizable: true,
     resizable: true,
+    monitorResize:true,
+    plain:true,
     layout: {
         type: 'vbox',
         align: 'stretch' //拉伸使其充满整个父容器
     },
     items: [{
         xtype: 'panel',
-        height: 728,
+        height: '95%',
         width: '100%',
         items: [{
             xtype: 'panel',
             id: 'tool',
-            height: 30,
+            height: '10%',
             width: '100%',
             items: [{
                 xtype: 'button',
@@ -60,7 +62,7 @@ Ext.define('phpray.view.main.Code', {
         }, {
             xtype: "textarea",
             id: 'editor',
-            height: 690,
+            height: '95%',
             width: '100%',
         }]
     }]

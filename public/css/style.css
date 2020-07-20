@@ -158,7 +158,7 @@
 }
 
 .btn {
-    border-color: white !important;
+    border-color: #5E6060 !important;
     height: 30px;
     border-radius: 3px !important;
     background-color: #303030 !important;
@@ -180,7 +180,7 @@
     font-weight: bolder !important;
 }
 
-#errorTree, #errorTable, #errorContent, #memoContent, #logTree, #logTable, #logContent, #logMessage, #errorMessage {
+#errorTree, #errorTable, #errorContent, #memoContent, #logTree, #logTable, #logContent {
     border: 1px solid #cccccc !important;
 }
 
@@ -266,7 +266,7 @@
     background: #2B2B2B !important;
 }
 .x-column-header {
-    border: 0.1px #cccccc !important;
+    border-color: #5E6060  !important;
     background-color: #3c3f41 !important;
 }
 
@@ -297,4 +297,13 @@
 
 .x-tree-elbow-plus:before, .x-tree-elbow-end-plus:before {
     background-color: #6f6f6f !important;
+}
+
+#logMessage, #errorMessage {
+    border: 1px solid #cccccc !important;
+    font-weight: bolder !important;
+    font-size: 10px !important;
+    color: #ffffff !important;
+    padding: 5px 0 10px 10px!important;
+    overflow: auto !important;
 }
