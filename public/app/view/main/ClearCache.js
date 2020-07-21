@@ -25,7 +25,7 @@ Ext.define('phpray.view.main.ClearCache', {
             data: [{'value': 'clearInitCode', 'Chinese': '仅当前初始化代码'},
                 {'value': 'clearTestCode', 'Chinese': '仅当前测试代码'},
                 {'value': 'clearTestAndInitCode', 'Chinese': '当前初始代码和测试代码'},
-                {'value': 'clearAllCode', 'Chinese': '所有代码'}]
+                {'value': 'clearAllCode', 'Chinese': '当前项目所有代码'},]
         }),
     }, {
         xtype: 'button',

@@ -331,3 +331,7 @@ body.x-border-layout-ct, div.x-border-layout-ct {
     border-top: 1px solid #d4d4d4;
     font: 300 13px/19px 'Open Sans', 'Helvetica Neue', helvetica, arial, verdana, sans-serif;
 }
+
+.x-tip-default {
+    background-color: #4B4D4C !important;
+}

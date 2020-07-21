@@ -42,8 +42,8 @@ function getTestCode() {
                         let obj = Ext.decode(data.responseText);
                         classCode = obj.classCode;
                         methodCode = obj.methodCode;
-                        codeEditorInit('<?php' + '\r' + classCode);
-                        codeEditorTest('<?php' + '\r' + methodCode);
+                        editorTest.session.setValue('<?php' + '\r' + methodCode);
+                        editorInit.session.setValue('<?php' + '\r' + classCode);
                         let request = indexedDB.open('phpRay');
                         request.onsuccess = function (event) {
                             let db = event.target.result;
@@ -90,25 +90,25 @@ function getTestCode() {
                             project: project,
                             fileName: fileName,
                             action: 'main.getTestCode',
-                            methodName: methodName,
-                            className: className
+                            methodName: eventData.methodName,
+                            className: eventData.className
                         },
                         dataType: 'json',
                         success: function (data, options) {
                             let obj = Ext.decode(data.responseText);
                             classCode = obj.classCode;
                             methodCode = obj.methodCode;
-                            codeEditorInit('<?php' + '\r' + (eventData.initCode === null ? classCode : eventData.initCode));
-                            codeEditorTest('<?php' + '\r' + (eventData.testCode === null ? methodCode : eventData.testCode));
-                            Ext.getCmp('history').setValue(className + '::' + methodName);
-                            historyValue = className + '::' + methodName;
+                            editorTest.session.setValue('<?php' + '\r' + (eventData.testCode === null ? methodCode : eventData.testCode));
+                            editorInit.session.setValue('<?php' + '\r' + (eventData.initCode === null ? classCode : eventData.initCode));
+                            Ext.getCmp('history').setValue(eventData.className + '::' + eventData.methodName);
+                            historyValue = eventData.className + '::' + eventData.methodName;
                         }
                     });
                 } else {
-                    codeEditorInit('<?php' + '\r' + eventData.initCode);
-                    codeEditorTest('<?php' + '\r' + eventData.testCode);
-                    Ext.getCmp('history').setValue(className + '::' + methodName);
-                    historyValue = className + '::' + methodName;
+                    editorTest.session.setValue('<?php' + '\r' + eventData.testCode);
+                    editorInit.session.setValue('<?php' + '\r' + eventData.initCode);
+                    Ext.getCmp('history').setValue(eventData.className + '::' + eventData.methodName);
+                    historyValue = eventData.className + '::' + eventData.methodName;
                 }
             }
         };
@@ -136,9 +136,10 @@ function getFileMethod() {
             zNodeMethod = rootMethodData(response[0]);
             Ext.getCmp('ztreeMethod').store.getNodeById('treeMethod').appendChild(zNodeMethod);
             Ext.getCmp('ztreeMethod').expandAll();
-            codeEditorInit('<?php' + '\r');
-            codeEditorTest('<?php' + '\r');
+            editorTest.session.setValue('<?php' + '\r');
+            editorInit.session.setValue('<?php' + '\r');
             Ext.getCmp('history').setValue('');
+            Ext.getCmp('methodSearch').setValue();
         },
     });
 }
@@ -262,13 +263,14 @@ function clearSelectCode(data) {
                     let reqAdd = store.put({
                         classAndMethod: historyValue,
                         initCode: null,
-                        testCode: e.target.result.testCode
+                        testCode: e.target.result.testCode,
+                        fileName: e.target.result.fileName,
+                        className: e.target.result.className,
+                        methodName: e.target.result.methodName
                     });
                     reqAdd.onsuccess = function (eve) {
-                        Ext.Msg.alert('', "清除当前初始化代码成功！！");
+                        Ext.Msg.alert('Success', "清除当前初始化代码成功！！");
                     };
-                } else {
-                    Ext.Msg.alert('', "清除当前初始化代码失败！！");
                 }
             };
             db.close();
@@ -284,13 +286,14 @@ function clearSelectCode(data) {
                     let reqAdd = store.put({
                         classAndMethod: historyValue,
                         initCode: eve.target.result.initCode,
-                        testCode: null
+                        testCode: null,
+                        fileName: eve.target.result.fileName,
+                        className: eve.target.result.className,
+                        methodName: eve.target.result.methodName
                     });
                     reqAdd.onsuccess = function (e) {
-                        Ext.Msg.alert('', "清除当前测试代码成功！！");
+                        Ext.Msg.alert('Success', "清除当前测试代码成功！！");
                     };
-                } else {
-                    Ext.Msg.alert('', "清除当前测试代码失败！！");
                 }
             };
             db.close();
@@ -300,21 +303,48 @@ function clearSelectCode(data) {
         request.onsuccess = function (event) {
             let db = event.target.result;
             let store = db.transaction(project, 'readwrite').objectStore(project);
-            let reqDel = store.delete(historyValue);
-            reqDel.onsuccess = function (e) {
-                Ext.Msg.alert('', "清除当前初始化和测试代码成功！！");
+            let reqGet = store.get(historyValue);
+            reqGet.onsuccess = function (eve) {
+                if (typeof eve.target.result !== 'undefined') {
+                    let reqAdd = store.put({
+                        classAndMethod: historyValue,
+                        initCode: null,
+                        testCode: null,
+                        fileName: eve.target.result.fileName,
+                        className: eve.target.result.className,
+                        methodName: eve.target.result.methodName
+                    });
+                    reqAdd.onsuccess = function (e) {
+                        Ext.Msg.alert('Success', "清除当前初始化和测试代码成功！！");
+                    };
+                }
             };
             db.close();
         };
     } else {
+        if (!project) {
+            Ext.Msg.alert('Failed', '请先选择项目');
+            return;
+        }
         let request = indexedDB.open('phpRay');
         request.onsuccess = function (event) {
             let db = event.target.result;
             let store = db.transaction(project, 'readwrite').objectStore(project);
             let reqClear = store.clear();
             reqClear.onsuccess = function (e) {
-                Ext.Msg.alert('', "清除所有代码成功！！");
             };
+            for (let i = 0; i < projectList.length; i++) {
+                let storeHistory = db.transaction('History_' + projectList[i], 'readwrite').objectStore('History_' + projectList[i]);
+                let reqHistoryClear = storeHistory.clear();
+                reqHistoryClear.onsuccess = function (e) {
+
+                };
+            }
+            Ext.getCmp('history').store.removeAll();
+            Ext.getCmp('history').setValue('');
+            editorTest.session.setValue('<?php' + '\r');
+            editorInit.session.setValue('<?php' + '\r');
+            Ext.Msg.alert('Success', "清除当前初始化和测试代码成功！！");
             db.close();
         };
     }
@@ -407,7 +437,7 @@ function rootMethodLeafData(Data) {
             data['iconCls'] += '-inherent';
         }
         if (DataNum['isConstructor']) {
-          data['iconCls'] += '-constructor';
+            data['iconCls'] += '-constructor';
         }
         result[j] = new DataObj(data['text'], data['children'], data['leaf'], data['iconCls'], data['description']);
     }
@@ -454,11 +484,11 @@ function returnRootData(Data) {
     for (let i in Data) {
         if (i !== 'children') {
             if (i === 'name') {
-                data['text'] = '<font style="color:#EDD99A">' + Data[i]  + '</font>' + '<font style="color:#deb887"> => </font>' + data['text'];
+                data['text'] = '<font style="color:#EDD99A">' + Data[i] + '</font>' + '<font style="color:#deb887"> => </font>' + data['text'];
             } else if (i === 'accessible') {
 
             } else if (i === 'size') {
-                data['text'] += ' <font style="color:#AF615B"> ( </font>'  + '<font style="color:#AF615B">' + Data[i] + ' </font>' + ' <font style="color:#AF615B ">) </font> ';
+                data['text'] += ' <font style="color:#AF615B"> ( </font>' + '<font style="color:#AF615B">' + Data[i] + ' </font>' + ' <font style="color:#AF615B ">) </font> ';
             } else if (i === 'value') {
                 data['text'] += ' ' + Data[i] + ' ';
             } else {

@@ -136,6 +136,11 @@ Ext.define('phpray.view.main.Main', {
                                     };
                                     db.close();
                                 };
+                                Ext.getCmp('ztreeMethod').store.getRootNode().removeAll(true);
+                                editorTest.session.setValue('<?php' + '\r');
+                                editorInit.session.setValue('<?php' + '\r');
+                                Ext.getCmp('search').setValue();
+                                Ext.getCmp('methodSearch').setValue();
                             },
                             failure: function (jqXHR) {
                                 Ext.Msg.alert('运行失败', jqXHR.responseText);
@@ -192,7 +197,7 @@ Ext.define('phpray.view.main.Main', {
                                             success: function (data, options) {
                                                 let obj = Ext.decode(data.responseText);
                                                 classCode = obj.classCode;
-                                                codeEditorInit('<?php' + '\r' + classCode);
+                                                editorInit.session.setValue('<?php' + '\r' + classCode);
                                             },
                                         });
                                         methodCode = eventData.initCode;
@@ -216,16 +221,16 @@ Ext.define('phpray.view.main.Main', {
                                             success: function (data, options) {
                                                 let obj = Ext.decode(data.responseText);
                                                 methodCode = obj.methodCode;
-                                                codeEditorTest('<?php' + '\r' + obj.methodCode);
+                                                editorTest.session.setValue('<?php' + '\r' + obj.methodCode);
                                             },
                                         });
                                         classCode = eventData.initCode;
-                                        codeEditorInit('<?php' + '\r' + eventData.initCode);
+                                        editorInit.session.setValue('<?php' + '\r' + eventData.initCode);
                                     } else {
                                         methodCode = eventData.testCode;
                                         classCode = eventData.initCode;
-                                        codeEditorInit('<?php' + '\r' + eventData.initCode);
-                                        codeEditorTest('<?php' + '\r' + eventData.testCode);
+                                        editorTest.session.setValue('<?php' + '\r' + eventData.testCode);
+                                        editorInit.session.setValue('<?php' + '\r' + eventData.initCode);
                                     }
                                 } else {
                                     getTestCode();
@@ -405,8 +410,6 @@ Ext.define('phpray.view.main.Main', {
                     click: function () {
                         if (!project) {
                             Ext.Msg.alert('Failed', '请先选择项目');
-                        } else if (!historyValue) {
-                            Ext.Msg.alert('Failed', '请选择清缓存的Method');
                         } else {
                             Ext.create('phpray.view.main.ClearCache').show();
                             Ext.getCmp('clearContent').select(Ext.getCmp('clearContent').store.getAt(0));
@@ -624,7 +627,7 @@ Ext.define('phpray.view.main.Main', {
                 listeners: {
                     itemmouseenter: function (node, e) {
                         let descrip = e.data.description.replace(/\n/g, '<br/>');
-                        let str = '<font style="color: #B6694F; font-weight: bolder">' + e.data.text + '</font>'+ '<br>' +  '<font style="font-weight:bolder; color: red;">' + '============================' + '</font>' + '<br>' + '<font style="font-weight: bolder">' + descrip + '</font>';
+                        let str = '<font style="color: white; font-weight: bolder; font-size: 14px">' + e.data.text + '</font>'+ '<br>' +  '<font style="font-weight:bolder;">' + '============================' + '</font>' + '<br>' + '<font style="color:white; font-weight: bolder">' + descrip + '</font>';
                         e.set('qtip', str);
                     },
                     itemdblclick: function (node, e) {
