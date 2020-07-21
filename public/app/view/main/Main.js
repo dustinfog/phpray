@@ -164,10 +164,6 @@ Ext.define('phpray.view.main.Main', {
                 listeners: {
                     select: function (combo, record, opts) {
                         historyValue = record.data['value'];
-                        className = historyValue.split('::')[0];
-                        methodName = historyValue.split('::')[1];
-                        let count = historyValue.split('\\').length;
-                        fileName = historyValue.split('\\')[count - 1].match(/(\S*)::/)[0] + '.php';
                         let dbRequest = indexedDB.open('phpRay');
                         dbRequest.onsuccess = function (e) {
                             let db = e.target.result;
@@ -176,6 +172,9 @@ Ext.define('phpray.view.main.Main', {
                             reqGet.onsuccess = function (event) {
                                 let eventData = event.target.result;
                                 if (eventData) {
+                                    className = eventData.className;
+                                    methodName = eventData.methodName;
+                                    fileName = eventData.fileName;
                                     if (eventData.initCode === null && eventData.testCode === null) {
                                         getTestCode();
                                     } else if (eventData.initCode === null) {
@@ -266,7 +265,10 @@ Ext.define('phpray.view.main.Main', {
                             let reqAdd = store.put({
                                 'classAndMethod': className + '::' + methodName,
                                 'initCode': classCode,
-                                'testCode': methodCode
+                                'testCode': methodCode,
+                                'fileName': fileName,
+                                'className': className,
+                                'methodName': methodName
                             });
                             reqAdd.onsuccess = function (e) {
                                 //console.log('测试代码保存成功');
@@ -276,8 +278,6 @@ Ext.define('phpray.view.main.Main', {
                         Ext.getCmp('run').setStyle('cursor', 'wait');
                         Ext.getCmp('run').disable();
                         Ext.getCmp('stop').enable();
-                        let testClassName = historyValue.split('::')[0];
-                        let testFileName = testClassName + '.php';
                         stopAjax = Ext.Ajax.request({
                             url: 'index.php',
                             method: 'POST',
@@ -285,8 +285,8 @@ Ext.define('phpray.view.main.Main', {
                                 methodCode: methodCode,
                                 classCode: classCode,
                                 project: project,
-                                className: testClassName,
-                                fileName: testFileName,
+                                className: className,
+                                fileName: fileName,
                                 action: 'main.runTest',
                             },
                             dataType: 'json',
@@ -531,6 +531,7 @@ Ext.define('phpray.view.main.Main', {
 
                                     fileName = text;
                                     getFileMethod();
+
                                 }
                             }, 300);
                         }

@@ -13,6 +13,7 @@ Ext.define('phpray.view.main.Code', {
         type: 'vbox',
         align: 'stretch' //拉伸使其充满整个父容器
     },
+    bodyStyle: 'background-color: #232525',
     items: [{
         xtype: 'panel',
         height: '95%',

@@ -213,7 +213,7 @@ Ext.define('phpray.view.main.LogWindow', { //日志弹窗
         xtype: 'panel',
         id: 'logContent',
         height: '40%',
-        // bodyStyle: 'background-color: #ccc',
+        bodyStyle: 'background-color: #ccc',
         containerScroll: true,
     }],
 });

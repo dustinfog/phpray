@@ -221,7 +221,7 @@ Ext.define('phpray.view.main.ErrorWindow', { //错误弹窗
         xtype: 'panel',
         id: 'errorContent',
         height: '40%',
-        // bodyStyle: 'background-color: #ccc',
+        bodyStyle: 'background-color: #ccc',
         containerScroll: true,
     }],
 });

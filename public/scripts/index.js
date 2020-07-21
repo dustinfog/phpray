@@ -64,7 +64,10 @@ function getTestCode() {
                             let reqAddProject = storeProject.put({
                                 'classAndMethod': className + '::' + methodName,
                                 'initCode': classCode,
-                                'testCode': methodCode
+                                'testCode': methodCode,
+                                'fileName': fileName,
+                                'className': className,
+                                'methodName': methodName
                             });
                             reqAddProject.onsuccess = function (e) {
                                 //console.log('测试代码保存成功');
@@ -133,6 +136,9 @@ function getFileMethod() {
             zNodeMethod = rootMethodData(response[0]);
             Ext.getCmp('ztreeMethod').store.getNodeById('treeMethod').appendChild(zNodeMethod);
             Ext.getCmp('ztreeMethod').expandAll();
+            codeEditorInit('<?php' + '\r');
+            codeEditorTest('<?php' + '\r');
+            Ext.getCmp('history').setValue('');
         },
     });
 }

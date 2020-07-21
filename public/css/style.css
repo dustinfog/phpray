@@ -274,8 +274,8 @@ body.x-border-layout-ct, div.x-border-layout-ct {
 }
 
 .x-window-body-default {
-    background-color: #232525 !important;
-    color: #fff !important;
+    background-color: #cccccc !important;
+    color: black !important;
 }
 
 .ace-twilight .ace_gutter {
