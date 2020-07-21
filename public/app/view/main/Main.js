@@ -622,7 +622,8 @@ Ext.define('phpray.view.main.Main', {
                 singleExpand: false,
                 listeners: {
                     itemmouseenter: function (node, e) {
-                        let str = '<font style="color: #B6694F; font-weight: bolder">' + e.data.text + '</font>' + '<font style="font-weight:bolder; color: red;">' + '=========' + '</font>' + '<font style="font-weight: bolder">' + e.data.description + '</font>';
+                        let descrip = e.data.description.replace(/\n/g, '<br/>');
+                        let str = '<font style="color: #B6694F; font-weight: bolder">' + e.data.text + '</font>'+ '<br>' +  '<font style="font-weight:bolder; color: red;">' + '============================' + '</font>' + '<br>' + '<font style="font-weight: bolder">' + descrip + '</font>';
                         e.set('qtip', str);
                     },
                     itemdblclick: function (node, e) {
@@ -663,6 +664,7 @@ Ext.define('phpray.view.main.Main', {
             split: true,
             collapisble: true,
             height: 200,
+            layout: 'border',
             items: [{
                 region: 'north',
                 xtype: 'panel',
@@ -671,10 +673,12 @@ Ext.define('phpray.view.main.Main', {
                 height: 30,
                 html: '测试代码',
             }, {
+                region: 'center',
                 xtype: 'textarea',
                 height: '100%',
                 width: '100%',
                 id: 'testCode',
+
             }],
         }, {
             region: 'south',

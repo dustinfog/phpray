@@ -1,4 +1,4 @@
-Ext.define('phpray.view.main.LogWindow', { //错误弹窗
+Ext.define('phpray.view.main.LogWindow', { //日志弹窗
     extend: 'Ext.window.Window',
     height: 758,
     width: 1024,
@@ -46,6 +46,7 @@ Ext.define('phpray.view.main.LogWindow', { //错误弹窗
                         }
                         Ext.getCmp('logTable').store.removeAll();
                         Ext.getCmp('logTable').store.add(resultLogs[logPage].backtrace);
+                        document.getElementById('logContent').innerHTML = '';
                     }
                 }
             }, {
@@ -85,6 +86,7 @@ Ext.define('phpray.view.main.LogWindow', { //错误弹窗
 
                         Ext.getCmp('logTable').store.removeAll();
                         Ext.getCmp('logTable').store.add(resultLogs[logPage].backtrace);
+                        document.getElementById('logContent').innerHTML = '';
                     }
                 }
             }]

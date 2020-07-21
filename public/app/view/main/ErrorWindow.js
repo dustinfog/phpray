@@ -50,6 +50,7 @@ Ext.define('phpray.view.main.ErrorWindow', { //错误弹窗
                         Ext.getCmp('errorTable').store.removeAll();
                         Ext.getCmp('errorTable').store.add(new ErrorTableObj(resultError[errorPage].file, resultError[errorPage].line));
                         Ext.getCmp('errorTable').store.add(resultError[errorPage].backtrace);
+                        document.getElementById('errorContent').innerHTML = '';
                     }
                 }
             }, {
@@ -93,6 +94,7 @@ Ext.define('phpray.view.main.ErrorWindow', { //错误弹窗
                         Ext.getCmp('errorTable').store.removeAll();
                         Ext.getCmp('errorTable').store.add(new ErrorTableObj(resultError[errorPage].file, resultError[errorPage].line));
                         Ext.getCmp('errorTable').store.add(resultError[errorPage].backtrace);
+                        document.getElementById('errorContent').innerHTML = '';
                     }
                 }
             }]
@@ -112,17 +114,16 @@ Ext.define('phpray.view.main.ErrorWindow', { //错误弹窗
             xtype: 'container',
             id: 'errorMessage',
             width: '100%',
-            height: '180',
+            height: 180,
             bodyStyle: 'overflow-x:hidden;overflow-y:auto; color: white; font-weight: bolder;font-size: 10px',
-            containerScroll: true,
         }, {
             xtype: 'treepanel',
             id: 'errorTree',
             width: '100%',
-            height: '180',
+            height: 180,
             containerScroll: true,
             rootVisible: false,
-            bodyStyle: 'color:white',
+            bodyStyle: 'color:white, overflow-y: auto;',
             store: Ext.create('Ext.data.TreeStore', {
                 root: {
                     id: 'treeError',
