@@ -22,11 +22,7 @@ Ext.Boot = Ext.Boot || (function (emptyFn) {
              * In debug builds, adding a "cache" or "disableCacheBuster" query parameter
              * to the page's URL will set this to `false`.
              */
-            disableCaching: (/[?&](?:cache|disableCacheBuster)\b/i.test(location.search) ||
-                !(/http[s]?\:/i.test(location.href)) ||
-                /(^|[ ;])ext-cache=1/.test(doc.cookie)) ? false :
-                true,
-
+            disableCaching: false,
             /**
              * @cfg {String} [disableCachingParam="_dc"]
              * The query parameter name for the cache buster's timestamp.
