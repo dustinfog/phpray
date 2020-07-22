@@ -311,6 +311,16 @@ body.x-border-layout-ct, div.x-border-layout-ct {
     overflow: auto !important;
 }
 
+.x-grid-with-row-lines .x-grid-item {
+    border-style: solid;
+    border-width: 1px 0 0;
+    border-color: #5E6060;
+}
+.x-grid-with-row-lines .x-grid-item:first-child {
+    border-top-color: #5E6060;
+}
+
+
 .x-grid-cell-special {
     border-color: #d4d4d4;
     border-style: solid;
