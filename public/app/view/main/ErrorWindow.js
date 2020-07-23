@@ -30,26 +30,26 @@ Ext.define('phpray.view.main.ErrorWindow', { //错误弹窗
                         errorPage--;
                         Ext.getCmp('errorPage').setText((errorPage + 1) + '/' + errorTotalPage); //页数
                         let reg = /^[0-9]*$/;
-                        let type = resultError[errorPage].type;
+                        let type = errorStore[errorPage].data.type;
                         if (reg.test(type)) {
                             type = errorType[type]; //错误类型解析
                         }
                         Ext.getCmp('titleError').setHtml('错误类型:  ' + type);
                         Ext.getCmp('errorTree').store.getNodeById('treeError').removeAll(true);
-                        if (resultError[errorPage].exception) {
-                            let errorData = returnRootData(resultError[errorPage].exception);
+                        if (errorStore[errorPage].data.exception) {
+                            let errorData = returnRootData(errorStore[errorPage].data.exception);
                             Ext.getCmp('errorTree').store.getNodeById('treeError').appendChild(errorData);
                             Ext.getCmp('errorTree').expandAll();
                             Ext.getCmp('errorTree').show();
                             Ext.getCmp('errorMessage').hide();
                         } else {
-                            Ext.getCmp('errorMessage').setHtml(resultError[errorPage].message);
+                            Ext.getCmp('errorMessage').setHtml(errorStore[errorPage].data.message);
                             Ext.getCmp('errorTree').hide();
                             Ext.getCmp('errorMessage').show();
                         }
                         Ext.getCmp('errorTable').store.removeAll();
-                        Ext.getCmp('errorTable').store.add(new ErrorTableObj(resultError[errorPage].file, resultError[errorPage].line));
-                        Ext.getCmp('errorTable').store.add(resultError[errorPage].backtrace);
+                        Ext.getCmp('errorTable').store.add(new ErrorTableObj(errorStore[errorPage].data.file, errorStore[errorPage].data.line));
+                        Ext.getCmp('errorTable').store.add(errorStore[errorPage].data.backtrace);
                         document.getElementById('errorContent').innerHTML = '';
                     }
                 }
@@ -74,26 +74,26 @@ Ext.define('phpray.view.main.ErrorWindow', { //错误弹窗
                         errorPage++;
                         Ext.getCmp('errorPage').setText((errorPage + 1) + '/' + errorTotalPage); //页数
                         let reg = /^[0-9]*$/;
-                        let type = resultError[errorPage].type;
+                        let type = errorStore[errorPage].data.type;
                         if (reg.test(type)) {
                             type = errorType[type]; //错误类型解析
                         }
                         Ext.getCmp('titleError').setHtml('错误类型:  ' + type);
                         Ext.getCmp('errorTree').store.getNodeById('treeError').removeAll(true);
-                        if (resultError[errorPage].exception) {
-                            let errorData = returnRootData(resultError[errorPage].exception);
+                        if (errorStore[errorPage].data.exception) {
+                            let errorData = returnRootData(errorStore[errorPage].data.exception);
                             Ext.getCmp('errorTree').store.getNodeById('treeError').appendChild(errorData);
                             Ext.getCmp('errorTree').expandAll();
                             Ext.getCmp('errorTree').show();
                             Ext.getCmp('errorMessage').hide();
                         } else {
-                            Ext.getCmp('errorMessage').setHtml(resultError[errorPage].message);
+                            Ext.getCmp('errorMessage').setHtml(errorStore[errorPage].data.message);
                             Ext.getCmp('errorTree').hide();
                             Ext.getCmp('errorMessage').show();
                         }
                         Ext.getCmp('errorTable').store.removeAll();
-                        Ext.getCmp('errorTable').store.add(new ErrorTableObj(resultError[errorPage].file, resultError[errorPage].line));
-                        Ext.getCmp('errorTable').store.add(resultError[errorPage].backtrace);
+                        Ext.getCmp('errorTable').store.add(new ErrorTableObj(errorStore[errorPage].data.file, errorStore[errorPage].data.line));
+                        Ext.getCmp('errorTable').store.add(errorStore[errorPage].data.backtrace);
                         document.getElementById('errorContent').innerHTML = '';
                     }
                 }
@@ -115,7 +115,7 @@ Ext.define('phpray.view.main.ErrorWindow', { //错误弹窗
             id: 'errorMessage',
             width: '100%',
             height: 180,
-            bodyStyle: 'overflow-x:hidden;overflow-y:auto; color: white; font-weight: bolder;font-size: 10px',
+            bodyStyle: 'overflow-x:hidden;overflow-y:auto; color: white; font-weight: bolder; font-size: 14px',
         }, {
             xtype: 'treepanel',
             id: 'errorTree',
@@ -144,31 +144,29 @@ Ext.define('phpray.view.main.ErrorWindow', { //错误弹窗
         listeners: {
             itemclick: function (view, rec, node, index, e, options) {
                 let that = this;
+                Ext.Ajax.request({
+                    url: 'index.php',
+                    method: 'POST',
+                    params: {
+                        project: project,
+                        file: rec.data.file,
+                        line: rec.data.line,
+                        action: 'main.getCode'
+                    },
+                    dataType: 'json',
+                    success: function (data, options) {
+                        let regexp = /^{.*}/; //正则表达式判断是否为json串
+                        if (!regexp.test(data.responseText)) {
+                            return;
+                        }
+                        let datum = Ext.decode(data.responseText);
+                        document.getElementById('errorContent').innerHTML = datum.code;
+                    },
+                });
                 setTimeout(function () {
                     let dblclick = parseInt($(that).data('double'), 10);
                     if (dblclick > 0) {
                         $(that).data('double', dblclick - 1);
-                    } else {
-                        Ext.Ajax.request({
-                            url: 'index.php',
-                            method: 'POST',
-                            params: {
-                                project: project,
-                                file: rec.data.file,
-                                line: rec.data.line,
-                                action: 'main.getCode'
-                            },
-                            dataType: 'json',
-                            success: function (data, options) {
-                                let regexp = /^{.*}/; //正则表达式判断是否为json串
-                                if (!regexp.test(data.responseText)) {
-                                    return;
-                                }
-                                let datum = Ext.decode(data.responseText);
-                                document.getElementById('errorContent').innerHTML = datum.code;
-                            },
-                        });
-                        that.getView().refresh();
                     }
                 }, 300);
             },

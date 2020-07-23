@@ -16,6 +16,8 @@ let errorTotalPage = 0; //error总条数
 let resultLogs = []; //运行后，返回的log数据
 let logPage = 0; //当前选择的error序号
 let logTotalPage = 0; //log总条数
+let logStore; //日志grid数据
+let errorStore; //错误grid数据
 
 //获得测试代码
 function getTestCode() {
@@ -127,19 +129,19 @@ function getFileMethod() {
         params: {project: project, fileName: fileName, action: 'main.getClassesAndMethods'},
         dataType: 'json',
         success: function (data, options) {
+            Ext.getCmp('ztreeMethod').store.getNodeById('treeMethod').removeAll(true);
+            editorTest.session.setValue('<?php' + '\r');
+            editorInit.session.setValue('<?php' + '\r');
+            Ext.getCmp('history').setValue('');
+            Ext.getCmp('methodSearch').setValue();
             let response = Ext.decode(data.responseText);
             if (response.length === 0) {
                 return;
             }
             className = response[0].name;
-            Ext.getCmp('ztreeMethod').store.getNodeById('treeMethod').removeAll(true);
             zNodeMethod = rootMethodData(response[0]);
             Ext.getCmp('ztreeMethod').store.getNodeById('treeMethod').appendChild(zNodeMethod);
             Ext.getCmp('ztreeMethod').expandAll();
-            editorTest.session.setValue('<?php' + '\r');
-            editorInit.session.setValue('<?php' + '\r');
-            Ext.getCmp('history').setValue('');
-            Ext.getCmp('methodSearch').setValue();
         },
     });
 }
@@ -526,7 +528,7 @@ let errorType = {
 
 
 //错误数据处理
-function ErrorObj(type, file, message, line) {
+function ErrorObj(type, file, message, line, exception, backtrace) {
     let reg = /^[0-9]*$/;
     if (reg.test(type)) {
         type = errorType[type]; //错误类型解析
@@ -535,6 +537,8 @@ function ErrorObj(type, file, message, line) {
     this.message = message;
     this.line = line;
     this.file = file;
+    this.exception = exception;
+    this.backtrace = backtrace;
 }
 
 // 将数据处理成errorTable面板可识别的数据格式

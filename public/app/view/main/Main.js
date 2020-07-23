@@ -53,7 +53,7 @@ Ext.define('phpray.view.main.Main', {
                 forceSelection: true,
                 autoLoad: false,
                 emptyText: '请选择项目',
-                fieldStyle: 'background-color: #303030; color:white; font-weight: bolder; border-color: #5E6060; border-radius: 3px; margin: 0 0 0 0; padding: 0 0 0 10px',
+                fieldStyle: 'background-color: #303030; color:white; font-weight: bolder; border-color: #5E6060; border-radius: 3px; margin: 0 0 0 0; padding: 0 0 0 10px; cursor: default',
                 projectList: Ext.Ajax.request({
                     url: 'index.php',
                     params: {action: 'main.getProjects'},
@@ -64,6 +64,7 @@ Ext.define('phpray.view.main.Main', {
                     useDefaultXhrHeader: false, contentType: "application/json",
                     success: function (response, options) {
                         projectList = Ext.decode(response.responseText);
+                        console.dir(projectList);
                         // 连接数据库
                         const request = indexedDB.open('phpRay');
                         request.onupgradeneeded = function (event) {
@@ -157,7 +158,7 @@ Ext.define('phpray.view.main.Main', {
                 flex: 1,
                 blankText: 'history',
                 emptyText: 'history',
-                fieldStyle: 'background-color: #303030; color:white; font-weight: bolder; border-color: #5E6060; border-radius: 3px; margin: 0 0 0 0; padding: 0 0 0 10px',
+                fieldStyle: 'background-color: #303030; color:white; font-weight: bolder; border-color: #5E6060; border-radius: 3px; margin: 0 0 0 0; padding: 0 0 0 10px; cursor:default; ',
                 store: Ext.create('Ext.data.Store', {
                     fields: ['value'],
                     data: []
@@ -341,21 +342,26 @@ Ext.define('phpray.view.main.Main', {
 
                                 //错误数据格式处理
                                 for (let i in resultError) {
-                                    let error = new ErrorObj(resultError[i]['type'], resultError[i]['file'], resultError[i]['message'], resultError[i]['line']);
+                                    let error = new ErrorObj(resultError[i]['type'], resultError[i]['file'], resultError[i]['message'], resultError[i]['line'], resultError[i]['exception'], resultError[i]['backtrace']);
                                     Ext.getCmp('error').store.add(error);
                                 }
 
                                 //日志数据格式处理
-                                function LogObj(recorder, message) {
+                                function LogObj(recorder, message, backtrace) {
                                     this.recorder = recorder;
+                                    let visibleMessage;
                                     if (message instanceof Object) {
-                                        message = message['type'] + '(' + message['size'] + ')';
+                                        visibleMessage = message['type'] + '(' + message['size'] + ')';
+                                    } else {
+                                        visibleMessage = message.split('\n')[0];
                                     }
+                                    this.visibleMessage = visibleMessage;
                                     this.message = message;
+                                    this.backtrace = backtrace;
                                 }
 
                                 for (let i in resultLogs) {
-                                    let log = new LogObj(resultLogs[i]['logger'], resultLogs[i]['message']);
+                                    let log = new LogObj(resultLogs[i]['logger'], resultLogs[i]['message'], resultLogs[i]['backtrace']);
                                     Ext.getCmp('log').store.add(log);
                                 }
                                 Ext.getCmp('stop').disable();
@@ -455,7 +461,7 @@ Ext.define('phpray.view.main.Main', {
                 region: 'north',
                 xtype: 'panel',
                 id: 'fileTitle',
-                bodyStyle: "background-color:#3D3F41;padding:10 0 10 10;font-size:15px;font-weight:bolder;color:white;border-color: #5E6060",
+                bodyStyle: "background-color:#3D3F41;font-size:15px;font-weight:bolder;color:white;border-color: #5E6060; line-height: 30px; text-indent:10px",
                 height: 30,
                 html: '文件',
             }, {
@@ -514,36 +520,6 @@ Ext.define('phpray.view.main.Main', {
                     itemclick: function (node, e) {
                         if (e.data.leaf === true) {
                             let that = this;
-                            setTimeout(function () {
-                                var dblclick = parseInt($(that).data('double'), 10);
-                                if (dblclick > 0) {
-                                    $(that).data('double', dblclick - 1);
-                                } else {
-                                    if (e.data.text === Ext.getCmp('search').getValue()) {
-                                        return;
-                                    }
-                                    let parent = e.parentNode;
-                                    let text = e.data.text;
-                                    while (parent.data.text !== 'Root') {
-                                        if (parent.data.text) {
-                                            text = parent.data.text + '/' + text;
-                                        }
-
-                                        parent = parent.parentNode;
-                                    }
-
-                                    fileName = text;
-                                    getFileMethod();
-
-                                }
-                            }, 300);
-                        }
-
-
-                    },
-                    itemdblclick: function (node, e) {
-                        $(this).data('double', 2);
-                        if (e.data.leaf === true) {
                             let parent = e.parentNode;
                             let text = e.data.text;
                             while (parent.data.text !== 'Root') {
@@ -554,6 +530,17 @@ Ext.define('phpray.view.main.Main', {
                             }
                             fileName = text;
                             getFileMethod();
+                            setTimeout(function () {
+                                var dblclick = parseInt($(that).data('double'), 10);
+                                if (dblclick > 0) {
+                                    $(that).data('double', dblclick - 1);
+                                }
+                            }, 300);
+                        }
+                    },
+                    itemdblclick: function (node, e) {
+                        $(this).data('double', 2);
+                        if (e.data.leaf === true) {
                             Ext.create('phpray.view.main.Code').show();
                             codeEditor();
                             edit();
@@ -570,7 +557,7 @@ Ext.define('phpray.view.main.Main', {
                 region: 'north',
                 xtype: 'panel',
                 id: 'daGangTitle',
-                bodyStyle: "background-color: #3D3F41; padding:10 0 10 10;font-size:15px;font-weight:bolder;border: #5E6060; color: white ",
+                bodyStyle: "background-color: #3D3F41; padding:10 0 10 10;font-size:15px;font-weight:bolder;border: #5E6060; color: white; text-indent:10px ",
                 height: 30,
                 html: '大纲',
             }, {
@@ -652,7 +639,7 @@ Ext.define('phpray.view.main.Main', {
                 region: 'north',
                 xtype: 'panel',
                 id: 'initCodeTitle',
-                bodyStyle: "background-color:#3D3F41;font-size:15px;font-weight:bolder;color:white; border: 0.1px solid #ccc",
+                bodyStyle: "background-color:#3D3F41;font-size:15px;font-weight:bolder;color:white; border: 0.1px solid #ccc; text-indent:10px",
                 height: 30,
                 html: '初始化代码',
             }, {
@@ -673,7 +660,7 @@ Ext.define('phpray.view.main.Main', {
                 region: 'north',
                 xtype: 'panel',
                 id: 'testCodeTitle',
-                bodyStyle: "background-color: #3D3F41;font-size:15px;font-weight:bolder;color:white; border: 0.1px solid #ccc",
+                bodyStyle: "background-color: #3D3F41;font-size:15px;font-weight:bolder;color:white; border: 0.1px solid #ccc; text-indent:10px",
                 height: 30,
                 html: '测试代码',
             }, {
@@ -741,14 +728,15 @@ Ext.define('phpray.view.main.Main', {
                     id: 'error',
                     xtype: 'errorList',
                     listeners: {
-                        itemclick: function (view, rec, node, index, e, options) {
+                        itemdblclick: function (view, rec, node, index, e, options) {
                             Ext.create('phpray.view.main.ErrorWindow').show();
                             errorTotalPage = Ext.getCmp('error').getStore().getCount();
                             errorPage = index;
+                            errorStore =  Ext.getCmp('error').getStore().getRange(0, errorTotalPage);
                             Ext.getCmp('errorPage').setText((errorPage + 1) + '/' + errorTotalPage); //页数
                             Ext.getCmp('titleError').setHtml('错误类型:  ' + rec.data.type);
-                            if (resultError[errorPage].exception) {
-                                let errorData = returnRootData(resultError[errorPage].exception);
+                            if (rec.data.exception) {
+                                let errorData = returnRootData(rec.data.exception);
                                 Ext.getCmp('errorTree').store.getNodeById('treeError').removeAll(true);
                                 Ext.getCmp('errorTree').store.getNodeById('treeError').appendChild(errorData);
                                 Ext.getCmp('errorTree').expandAll();
@@ -760,8 +748,8 @@ Ext.define('phpray.view.main.Main', {
                                 Ext.getCmp('errorMessage').show();
                             }
                             Ext.getCmp('errorTable').store.removeAll();
-                            Ext.getCmp('errorTable').store.add(new ErrorTableObj(resultError[errorPage].file, resultError[errorPage].line));
-                            Ext.getCmp('errorTable').store.add(resultError[errorPage].backtrace);
+                            Ext.getCmp('errorTable').store.add(new ErrorTableObj(rec.data.file, rec.data.line));
+                            Ext.getCmp('errorTable').store.add(rec.data.backtrace);
                             // this.getView().refresh();
                         },
                     }
@@ -777,13 +765,14 @@ Ext.define('phpray.view.main.Main', {
                         select: function () {
                             this.getView().refresh();
                         },
-                        itemclick: function (view, rec, node, index, e, options) {
+                        itemdblclick: function (view, rec, node, index, e, options) {
                             Ext.create('phpray.view.main.LogWindow').show();
                             logTotalPage = Ext.getCmp('log').getStore().getCount();
                             logPage = index;
+                            logStore = Ext.getCmp('log').getStore().getRange(0, logTotalPage);
                             Ext.getCmp('logPage').setText((logPage + 1) + '/' + logTotalPage); //页数
                             Ext.getCmp('titleLog').setHtml('调用者:  ' + rec.data.recorder);
-                            let message = resultLogs[logPage].message;
+                            let message = rec.data.message;
                             if (message instanceof Object) {
                                 let logData = returnRootData(message);
                                 Ext.getCmp('logTree').store.getNodeById('treeLog').removeAll(true);
@@ -797,7 +786,7 @@ Ext.define('phpray.view.main.Main', {
                                 Ext.getCmp('logMessage').show();
                             }
                             Ext.getCmp('logTable').store.removeAll();
-                            Ext.getCmp('logTable').store.add(resultLogs[logPage].backtrace);
+                            Ext.getCmp('logTable').store.add(rec.data.backtrace);
                             this.getSelectionModel().clearSelections();
                             // this.getView().refresh();
                         },

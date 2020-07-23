@@ -305,7 +305,7 @@ body.x-border-layout-ct, div.x-border-layout-ct {
 #logMessage, #errorMessage {
     border: 1px solid #cccccc !important;
     font-weight: bolder !important;
-    font-size: 10px !important;
+    font-size: 14px !important;
     color: #ffffff !important;
     padding: 5px 0 10px 10px!important;
     overflow: auto !important;
@@ -344,4 +344,9 @@ body.x-border-layout-ct, div.x-border-layout-ct {
 
 .x-tip-default {
     background-color: #4B4D4C !important;
+}
+
+#fileTitle, #daGangTitle, #initCodeTitle, #testCodeTitle, #titleError, #titleLog {
+    user-select: none !important;
+
 }

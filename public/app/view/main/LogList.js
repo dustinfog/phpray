@@ -12,7 +12,7 @@ Ext.define('phpray.view.main.LogList', {
 
     columns: [
         { text: '记录者',  dataIndex: 'recorder' },
-        { text: '消息', dataIndex: 'message', flex: 1 }
+        { text: '消息', dataIndex: 'visibleMessage', flex: 1 },
     ],
 
 });

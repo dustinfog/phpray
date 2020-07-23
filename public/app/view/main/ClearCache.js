@@ -19,7 +19,7 @@ Ext.define('phpray.view.main.ClearCache', {
         height: 30,
         width:  200,
         editable: false,
-        fieldStyle:'background-color: #303030; color:black; font-weight: bolder; border: 0.1px solid #cccc, margin: 0 0 0 0; padding: 0 0 0 10px',
+        fieldStyle:'background-color: #303030; color:black; font-weight: bolder; border: 0.1px solid #cccc, margin: 0 0 0 0; padding: 0 0 0 10px; cursor: default;',
         store: Ext.create('Ext.data.Store', {
             fields: ['value', 'Chinese'],
             data: [{'value': 'clearInitCode', 'Chinese': '仅当前初始化代码'},

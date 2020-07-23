@@ -29,8 +29,8 @@ Ext.define('phpray.view.main.LogWindow', { //日志弹窗
                         }
                         logPage--;
                         Ext.getCmp('logPage').setText((logPage + 1) + '/' + logTotalPage); //页数
-                        Ext.getCmp('titleLog').setHtml('调用者:  ' + resultLogs[logPage].logger);
-                        let message = resultLogs[logPage].message;
+                        Ext.getCmp('titleLog').setHtml('调用者:  ' + logStore[logPage].data.recorder);
+                        let message = logStore[logPage].data.message;
                         Ext.getCmp('logTree').store.getNodeById('treeLog').removeAll(true);
                         if (message instanceof Object) {
                             let logData = returnRootData(message);
@@ -45,7 +45,7 @@ Ext.define('phpray.view.main.LogWindow', { //日志弹窗
 
                         }
                         Ext.getCmp('logTable').store.removeAll();
-                        Ext.getCmp('logTable').store.add(resultLogs[logPage].backtrace);
+                        Ext.getCmp('logTable').store.add(logStore[logPage].data.backtrace);
                         document.getElementById('logContent').innerHTML = '';
                     }
                 }
@@ -69,8 +69,8 @@ Ext.define('phpray.view.main.LogWindow', { //日志弹窗
                         }
                         logPage++;
                         Ext.getCmp('logPage').setText((logPage + 1) + '/' + logTotalPage); //页数
-                        Ext.getCmp('titleLog').setHtml('调用者:  ' + resultLogs[logPage].logger);
-                        let message = resultLogs[logPage].message;
+                        Ext.getCmp('titleLog').setHtml('调用者:  ' + logStore[logPage].data.recorder);
+                        let message = logStore[logPage].data.message;
                         if (message instanceof Object) {
                             let logData = returnRootData(message);
                             Ext.getCmp('logTree').store.getNodeById('treeLog').removeAll(true);
@@ -85,7 +85,7 @@ Ext.define('phpray.view.main.LogWindow', { //日志弹窗
                         }
 
                         Ext.getCmp('logTable').store.removeAll();
-                        Ext.getCmp('logTable').store.add(resultLogs[logPage].backtrace);
+                        Ext.getCmp('logTable').store.add(logStore[logPage].data.backtrace);
                         document.getElementById('logContent').innerHTML = '';
                     }
                 }
@@ -107,7 +107,7 @@ Ext.define('phpray.view.main.LogWindow', { //日志弹窗
             id: 'logMessage',
             width: '100%',
             height: 180,
-            bodyStyle: 'overflow-x:hidden;overflow-y:auto; color: white; font-weight: bolder;font-size: 10px',
+            bodyStyle: 'overflow-x:hidden;overflow-y:auto; color: white; font-weight: bolder;font-size: 14px',
         },{
             xtype: 'treepanel',
             id: 'logTree',
@@ -136,31 +136,29 @@ Ext.define('phpray.view.main.LogWindow', { //日志弹窗
         listeners: {
             itemclick: function (view, rec, node, index, e, options) {
                 let that = this;
+                Ext.Ajax.request({
+                    url: 'index.php',
+                    method: 'POST',
+                    params: {
+                        project: project,
+                        file: rec.data.file,
+                        line: rec.data.line,
+                        action: 'main.getCode'
+                    },
+                    dataType: 'json',
+                    success: function (data, options) {
+                        let regexp = /^{.*}/; //正则表达式判断是否为json串
+                        if (!regexp.test(data.responseText)) {
+                            return;
+                        }
+                        let datum = Ext.decode(data.responseText);
+                        document.getElementById('logContent').innerHTML = datum.code;
+                    },
+                });
                 setTimeout(function () {
                     let dblclick = parseInt($(that).data('double'), 10);
                     if (dblclick > 0) {
                         $(that).data('double', dblclick - 1);
-                    } else {
-                        Ext.Ajax.request({
-                            url: 'index.php',
-                            method: 'POST',
-                            params: {
-                                project: project,
-                                file: rec.data.file,
-                                line: rec.data.line,
-                                action: 'main.getCode'
-                            },
-                            dataType: 'json',
-                            success: function (data, options) {
-                                let regexp = /^{.*}/; //正则表达式判断是否为json串
-                                if (!regexp.test(data.responseText)) {
-                                    return;
-                                }
-                                let datum = Ext.decode(data.responseText);
-                                document.getElementById('logContent').innerHTML = datum.code;
-                            },
-                        });
-                        that.getView().refresh();
                     }
                 }, 300);
             },
