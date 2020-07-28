@@ -18,7 +18,7 @@ let logPage = 0; //当前选择的error序号
 let logTotalPage = 0; //log总条数
 let logStore; //日志grid数据
 let errorStore; //错误grid数据
-let allowModify = true; //是否允许代码查看编辑
+let allowModify = false; //是否允许代码预览
 
 function isAllowModify() {
     Ext.Ajax.request({
