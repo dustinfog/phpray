@@ -18,6 +18,24 @@ let logPage = 0; //当前选择的error序号
 let logTotalPage = 0; //log总条数
 let logStore; //日志grid数据
 let errorStore; //错误grid数据
+let allowModify = true; //是否允许代码查看编辑
+
+function isAllowModify() {
+    Ext.Ajax.request({
+        url: 'index.php',
+        params: {action: 'main.allowModify'},
+        method: 'POST',
+        async: false,
+        crossDomain: true,
+        cors: true,
+        useDefaultXhrHeader: false, contentType: "application/json",
+        success: function (response, options) {
+            allowModify = Ext.decode(response.responseText);
+        }
+    });
+}
+
+
 
 //获得测试代码
 function getTestCode() {

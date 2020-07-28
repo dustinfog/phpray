@@ -172,6 +172,9 @@ Ext.define('phpray.view.main.ErrorWindow', { //错误弹窗
             },
             itemdblclick: function (view, rec, node, index, e, options) {
                 $(this).data('double', 2);
+                if (!allowModify) {
+                    return;
+                }
                 Ext.create('phpray.view.main.Code').show();
                 codeEditor();
                 Ext.Ajax.request({

@@ -17,5 +17,6 @@ Ext.define('phpray.Application', {
     launch: function () { //页面加载完成后自动调用launch
         codeEditorInit('<?php\r');
         codeEditorTest('<?php\r');
+        //isAllowModify();
     }
 });

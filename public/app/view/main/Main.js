@@ -541,6 +541,9 @@ Ext.define('phpray.view.main.Main', {
                     itemdblclick: function (node, e) {
                         $(this).data('double', 2);
                         if (e.data.leaf === true) {
+                            if (!allowModify) {
+                                return;
+                            }
                             Ext.create('phpray.view.main.Code').show();
                             codeEditor();
                             edit();

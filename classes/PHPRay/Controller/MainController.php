@@ -318,4 +318,7 @@ class MainController
         }
     }
 
+    public function allowModify() {
+        return Auth::allowModify();
+    }
 }
