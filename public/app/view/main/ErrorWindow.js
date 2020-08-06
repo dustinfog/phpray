@@ -132,7 +132,7 @@ Ext.define('phpray.view.main.ErrorWindow', { //错误弹窗
             }),
             listeners: {
                 itemclick: function () {
-                    this.getView().refresh();
+                    //this.getView().refresh();
                 }
             }
         }]

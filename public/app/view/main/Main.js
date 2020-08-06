@@ -302,7 +302,7 @@ Ext.define('phpray.view.main.Main', {
                                 Ext.getCmp('error').store.removeAll();
                                 Ext.getCmp('log').store.removeAll();
                                 Ext.getCmp('profile').store.removeAll();
-                                Ext.getCmp('return').store.removeAll();
+                                Ext.getCmp('returnTree').store.getNodeById('treeReturn').removeAll(true);
                                 let regexp = /^{.*}/; //正则表达式判断是否为json串
                                 let retBool = regexp.test(response.responseText);
                                 if (!retBool) {
@@ -320,7 +320,8 @@ Ext.define('phpray.view.main.Main', {
                                 resultLogs = respText.logs;
                                 let resultProfile = respText.profileData;
                                 let returnData = returnRootData(resultReturn);
-                                Ext.getCmp('return').store.add(returnData);
+                                Ext.getCmp('returnTree').store.getNodeById('treeReturn').appendChild(returnData);
+                                Ext.getCmp('returnTree').expandAll();
                                 Ext.getCmp('output').setHtml(resultOutput);
                                 Ext.getCmp('elapsedTime').setHtml(resultElapsed);
 
@@ -688,7 +689,7 @@ Ext.define('phpray.view.main.Main', {
                 title: '返回',
                 iconCls: 'return',
                 xtype: 'treepanel',
-                id: 'return',
+                id: 'returnTree',
                 height: '100%',
                 width: '100%',
                 containerScroll: true,
@@ -701,7 +702,7 @@ Ext.define('phpray.view.main.Main', {
                 }),
                 listeners: {
                     itemclick: function () {
-                        this.getView().refresh();
+                        //this.getView().refresh();
                     }
                 }
             }, {
@@ -712,7 +713,7 @@ Ext.define('phpray.view.main.Main', {
                 width: '100%',
                 id: 'output',
                 editable: false,
-                bodyStyle: 'overflow-x:hidden;overflow-y:auto; color: white;font-weight: bolder',
+                bodyStyle: 'overflow-x:auto;overflow-y:auto; color: white;font-weight: bolder',
             }, {
                 title: '耗时',
                 iconCls: 'elapsedTime',
