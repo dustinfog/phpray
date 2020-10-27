@@ -66,20 +66,22 @@ Ext.define('phpray.view.main.Main', {
                         projectList = Ext.decode(response.responseText);
                         console.dir(projectList);
                         // 连接数据库
-                        const request = indexedDB.open('phpRay');
+                        const request = indexedDB.open('phpRay', 3);
                         request.onupgradeneeded = function (event) {
                             const db = event.target.result;
-                            for (let i = 0; i < projectList.length; i++) {
-                                db.createObjectStore('History_' + projectList[i], {
+                            if (db.version === 3) {
+                                for (let i = 0; i < projectList.length; i++) {
+                                    db.createObjectStore('History_' + projectList[i], {
+                                        keyPath: 'value'
+                                    });
+                                    db.createObjectStore(projectList[i], {
+                                        keyPath: 'classAndMethod'
+                                    });
+                                }
+                                db.createObjectStore('Memo', {
                                     keyPath: 'value'
                                 });
-                                db.createObjectStore(projectList[i], {
-                                    keyPath: 'classAndMethod'
-                                });
                             }
-                            db.createObjectStore('Memo', {
-                                keyPath: 'value'
-                            });
                             db.close();
                         };
                         let dbRequest = indexedDB.open('phpRay');
@@ -618,7 +620,7 @@ Ext.define('phpray.view.main.Main', {
                 listeners: {
                     itemmouseenter: function (node, e) {
                         let descrip = e.data.description.replace(/\n/g, '<br/>');
-                        let str = '<font style="color: white; font-weight: bolder; font-size: 14px">' + e.data.text + '</font>'+ '<br>' +  '<font style="font-weight:bolder;">' + '============================' + '</font>' + '<br>' + '<font style="color:white; font-weight: bolder">' + descrip + '</font>';
+                        let str = '<font style="color: white; font-weight: bolder; font-size: 14px">' + e.data.text + '</font>' + '<br>' + '<font style="font-weight:bolder;">' + '============================' + '</font>' + '<br>' + '<font style="color:white; font-weight: bolder">' + descrip + '</font>';
                         e.set('qtip', str);
                     },
                     itemdblclick: function (node, e) {
@@ -736,7 +738,7 @@ Ext.define('phpray.view.main.Main', {
                             Ext.create('phpray.view.main.ErrorWindow').show();
                             errorTotalPage = Ext.getCmp('error').getStore().getCount();
                             errorPage = index;
-                            errorStore =  Ext.getCmp('error').getStore().getRange(0, errorTotalPage);
+                            errorStore = Ext.getCmp('error').getStore().getRange(0, errorTotalPage);
                             Ext.getCmp('errorPage').setText((errorPage + 1) + '/' + errorTotalPage); //页数
                             Ext.getCmp('titleError').setHtml('错误类型:  ' + rec.data.type);
                             if (rec.data.exception) {
