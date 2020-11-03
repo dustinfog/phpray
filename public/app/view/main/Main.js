@@ -373,11 +373,12 @@ Ext.define('phpray.view.main.Main', {
                                     return str.replace(/<[^>]+>/g,"");//去掉所有的html标记
                                 }
 
-                                if (delHtmlTag(returnData.text) === 'NULL' && resultOutput) {
-                                    Ext.getCmp('tabPanel').setActiveTab(1);
-                                }
                                 if (resultError.length > 0) {
                                     Ext.getCmp('tabPanel').setActiveTab(3);
+                                } else if (delHtmlTag(returnData.text) === 'NULL' && resultOutput) {
+                                    Ext.getCmp('tabPanel').setActiveTab(1);
+                                } else {
+                                    Ext.getCmp('tabPanel').setActiveTab(0);
                                 }
 
                                 Ext.getCmp('stop').disable();
@@ -701,6 +702,7 @@ Ext.define('phpray.view.main.Main', {
             deferredRender: false,
             split: true,
             id: 'tabPanel',
+            activeTab: 0,
             items: [{
                 title: '返回',
                 iconCls: 'return',
