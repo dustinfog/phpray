@@ -309,6 +309,7 @@ Ext.define('phpray.view.main.Main', {
                                 let retBool = regexp.test(response.responseText);
                                 if (!retBool) {
                                     Ext.getCmp('output').setHtml(response.responseText);
+                                    Ext.getCmp('tabPanel').setActiveTab(1);
                                     Ext.getCmp('stop').disable();
                                     Ext.getCmp('run').enable();
                                     Ext.getCmp('run').setStyle('cursor', 'pointer');
@@ -367,6 +368,18 @@ Ext.define('phpray.view.main.Main', {
                                     let log = new LogObj(resultLogs[i]['logger'], resultLogs[i]['message'], resultLogs[i]['backtrace']);
                                     Ext.getCmp('log').store.add(log);
                                 }
+
+                                function delHtmlTag(str){
+                                    return str.replace(/<[^>]+>/g,"");//去掉所有的html标记
+                                }
+
+                                if (delHtmlTag(returnData.text) === 'NULL' && resultOutput) {
+                                    Ext.getCmp('tabPanel').setActiveTab(1);
+                                }
+                                if (resultError.length > 0) {
+                                    Ext.getCmp('tabPanel').setActiveTab(3);
+                                }
+
                                 Ext.getCmp('stop').disable();
                                 Ext.getCmp('run').enable();
                                 Ext.getCmp('run').setStyle('cursor', 'pointer');
@@ -687,6 +700,7 @@ Ext.define('phpray.view.main.Main', {
             panel: true,
             deferredRender: false,
             split: true,
+            id: 'tabPanel',
             items: [{
                 title: '返回',
                 iconCls: 'return',
