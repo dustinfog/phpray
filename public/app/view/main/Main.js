@@ -301,6 +301,7 @@ Ext.define('phpray.view.main.Main', {
                             async: true,
                             timeout: 30000,
                             success: function (response, options) {
+                                Ext.getCmp('tabPanel').setActiveTab(0);
                                 Ext.getCmp('error').store.removeAll();
                                 Ext.getCmp('log').store.removeAll();
                                 Ext.getCmp('profile').store.removeAll();
