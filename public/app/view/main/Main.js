@@ -264,6 +264,7 @@ Ext.define('phpray.view.main.Main', {
                         if (!methodCode) {
                             let info = '测试代码不能为空！！！';
                             Ext.getCmp('output').setHtml(info);
+                            Ext.getCmp('tabPanel').setActiveTab(1);
                             return;
                         }
                         let addRequest = indexedDB.open('phpRay');

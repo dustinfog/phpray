@@ -11,5 +11,6 @@ return array(
         "username" => "test",
         "password" => "test",
         "allowIps" => array("127.0.0.*"),
+        "allowModify" => false,
     ),
 );
