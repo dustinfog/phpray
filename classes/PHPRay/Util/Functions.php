@@ -135,7 +135,7 @@ class Functions
 
     public static function stripslashesReqeust()
     {
-        if ((function_exists("get_magic_quotes_gpc") && get_magic_quotes_gpc()) || (ini_get('magic_quotes_sybase') && (strtolower(ini_get('magic_quotes_sybase')) != "off"))) {
+        if ((function_exists("get_magic_quotes_gpc") && @get_magic_quotes_gpc()) || (ini_get('magic_quotes_sybase') && (strtolower(ini_get('magic_quotes_sybase')) != "off"))) {
             $_GET = self::stripslashesDeep($_GET);
             $_POST = self::stripslashesDeep($_POST);
             $_COOKIE = self::stripslashesDeep($_COOKIE);

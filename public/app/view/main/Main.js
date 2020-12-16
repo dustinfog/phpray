@@ -463,6 +463,30 @@ Ext.define('phpray.view.main.Main', {
                         Ext.create('phpray.view.main.MemoWindow').show();
                     }
                 }
+            }, {
+                xtype: 'button',
+                cls: 'btn',
+                iconCls: 'php',
+                margin: '0 5',
+                flex: 0,
+                text: 'phpinfo',
+                listeners: {
+                    click: function () {
+                        window.open("phpinfo.php", "_blank")
+                    }
+                }
+            }, {
+                xtype: 'button',
+                cls: 'btn',
+                iconCls: 'php',
+                margin: '0 5',
+                flex: 0,
+                text: 'opcache',
+                listeners: {
+                    click: function () {
+                        window.open("opcache.php", "_blank")
+                    }
+                }
             }],
         },
     }, {

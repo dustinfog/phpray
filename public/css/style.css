@@ -26,6 +26,10 @@
     background-image: url(../resources/assets/memo.gif) !important;
 }
 
+.php {
+    background-image: url(../resources/assets/php.png) !important;
+}
+
 .refresh {
     background-image: url(../resources/assets/refresh.gif) !important;
 }

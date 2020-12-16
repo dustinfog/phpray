@@ -239,7 +239,7 @@ class MainController
         Project::interceptLogs($project);
         $this->includeProjectFile($project);
 
-        if (array_key_exists('className', $_POST) && !empty($_POST['className'])) {
+        if ((!($project['testPublicOnly'] ?? false)) &&  array_key_exists('className', $_POST) && !empty($_POST['className'])) {
             ReflectionUtil::publicityAllMethods($_POST['className']);
         }
 
