@@ -273,15 +273,21 @@ class MainController
             $exception = $e;
         }
 
-        Project::shutdownProject($project, $exception);
+
+        $sync = Project::shutdownProject($project, $exception);
 
         $profileData = $profiler->disable($profileData);
         $output = ob_get_clean();
         $elapsed = Functions::getMillisecond() - $start;
         $errorHandler->catchTheLastError();
 
+        // 没有自定义data 取sync data
+        if (!empty($sync) && empty($ret['data'])) {
+            $ret['data'] = $sync['data'];
+        }
+        $re = ReflectionUtil::watch($ret);
         return array(
-            'return' => ReflectionUtil::watch($ret),
+            'return' => $re,
             'output' => $output,
             'errors' => $errorHandler->getErrors(),
             'elapsed' => $elapsed,

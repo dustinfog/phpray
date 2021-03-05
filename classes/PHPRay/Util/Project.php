@@ -71,7 +71,7 @@ class Project
             return;
         }
 
-        call_user_func($project["shutdown"], $exception);
+       return call_user_func($project["shutdown"], $exception);
     }
 
     public static function getProjectFile($project, $fileName, &$debug = false) {
