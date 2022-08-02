@@ -51,7 +51,7 @@ class ErrorHandler
     public function catchTheLastError()
     {
         $error = error_get_last();
-        if (self::isFatalError($error['type'])) {
+        if ($error && self::isFatalError($error['type'])) {
             $error["backtrace"] = array();
             $this->errors[] = $error;
         }
