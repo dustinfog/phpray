@@ -9,6 +9,7 @@
 namespace PHPRay\Util\LogInterceptors;
 
 use PHPRay\Util\Functions;
+use PHPRay\Util\LogBuffer;
 use PHPRay\Util\LogInterceptor;
 use PHPRay\Util\ReflectionUtil;
 
@@ -26,13 +27,6 @@ abstract class LogIntercepterBase implements LogInterceptor
         }
 
         return static::$instance;
-    }
-
-    private $logs = array();
-
-    public function getLogs()
-    {
-        return $this->logs;
     }
 
     public function intercept($methodName, $interceptCallback, $className = null)
@@ -66,16 +60,7 @@ abstract class LogIntercepterBase implements LogInterceptor
     protected function callAndSaveLog($interceptCallback, $callbackKey, $trace, $args)
     {
         $message = call_user_func_array($interceptCallback, $args);
-
-        if (!is_string($message)) {
-            $message = ReflectionUtil::watch($message);
-        }
-
-        $this->logs[] = array(
-            "logger" => $callbackKey,
-            "backtrace" => Functions::simplifyBacktrace($trace),
-            "message" => $message
-        );
+        LogBuffer::append($callbackKey, $trace, $message);
     }
 
     abstract public function isEnabled();

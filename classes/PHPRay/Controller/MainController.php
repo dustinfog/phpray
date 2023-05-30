@@ -11,6 +11,7 @@ namespace PHPRay\Controller;
 use PHPRay\Util\Auth;
 use PHPRay\Util\ErrorHandler;
 use PHPRay\Util\Functions;
+use PHPRay\Util\LogBuffer;
 use PHPRay\Util\LogInterceptorFactory;
 use PHPRay\Util\RunkitLogInterceptor;
 use PHPRay\Util\Project;
@@ -292,7 +293,7 @@ class MainController
             'errors' => $errorHandler->getErrors(),
             'elapsed' => $elapsed,
             'profileData' => $profileData,
-            'logs' => LogInterceptorFactory::getLogInterceptor()->getLogs()
+            'logs' => LogBuffer::getLogs(),
         );
     }
     

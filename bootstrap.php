@@ -10,3 +10,7 @@ ini_set("error_log", PHPRAY_APP_ROOT . "logs/error.log");
 ini_set('memory_limit', '-1');
 
 include_once("vendor/autoload.php");
+
+function phpray_log(mixed $message) {
+    \PHPRay\Util\LogBuffer::append(__FUNCTION__, debug_backtrace(), $message);
+}
