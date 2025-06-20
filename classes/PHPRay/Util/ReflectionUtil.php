@@ -100,7 +100,7 @@ class ReflectionUtil
         }
 
         usort($methodInfos, function ($info1, $info2) {
-            return $info1["shortName"] > $info2["shortName"];
+            return $info1["shortName"] > $info2["shortName"] ? 1 : -1;
         });
 
         return $methodInfos;
